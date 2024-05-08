@@ -1,0 +1,125 @@
+every 1 second:
+    loop all players:
+        set tab header to "&f&l-------- &a&l의타이쿤 &e&l진짜 &a&l시즌 1 &f&l--------%nl%" and footer to "%nl%&f&l현재 접속자 수: %number of all players%" for loop-player
+
+every 1 second:
+    loop all players:
+        set {world.time.%uuid of loop-player%} to 0
+        if time in world of loop-player is night:
+            set {world.time.%uuid of loop-player%} to 1
+
+        set {stat.farmingfo.%uuid of loop-player%} to 0
+        add {level.farming.%uuid of loop-player%}*{level.bonus.farming.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {level.combat.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {level.farming.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {level.mining.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {level.fishing.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {level.boss.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.farmingfo.%uuid of loop-player%}
+        add {collection.main.sum.%uuid of loop-player%} to {stat.farmingfo.%uuid of loop-player%}
+
+        set {stat.miningfo.%uuid of loop-player%} to 0
+        add {level.mining.%uuid of loop-player%}*{level.bonus.mining.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {level.combat.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {level.farming.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {level.mining.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {level.fishing.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {level.boss.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.miningfo.%uuid of loop-player%}
+        add {collection.main.sum.%uuid of loop-player%} to {stat.miningfo.%uuid of loop-player%}
+
+        set {stat.fishingfo.%uuid of loop-player%} to 0
+        add {fishing.fortune.equipment.%uuid of loop-player%} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.fishing.%uuid of loop-player%}*{level.bonus.fishing.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.combat.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.farming.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.mining.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.fishing.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {level.boss.%uuid of loop-player%}*{level.bonus.global.stat} to {stat.fishingfo.%uuid of loop-player%}
+        add {collection.main.sum.%uuid of loop-player%} to {stat.fishingfo.%uuid of loop-player%}
+
+        set {fishing.catch.creature.%uuid of loop-player%} to 20
+        add {fishing.equipment.creature.%uuid of loop-player%} to {fishing.catch.creature.%uuid of loop-player%}
+
+        set {fishing.catch.trophy.%uuid of loop-player%} to 5
+        add {fishing.equipment.trophy.%uuid of loop-player%} to {fishing.catch.trophy.%uuid of loop-player%}
+
+        set {_} to 1
+        loop 4 times:
+            if {trophy.fish.sum.%uuid of loop-player%::%{_}%} is 9:
+                add (25*{_}) to {stat.fishingfo.%uuid of loop-player%}
+                if {_} is 1:
+                    add 1 to {fishing.catch.trophy.%uuid of loop-player%}
+                else if {_} is 2:
+                    add 2 to {fishing.catch.trophy.%uuid of loop-player%}
+                else if {_} is 3:
+                    add 2 to {fishing.catch.trophy.%uuid of loop-player%}
+                else if {_} is 4:
+                    add 3 to {fishing.catch.trophy.%uuid of loop-player%}
+            add 1 to {_}
+
+        if {stat.fishingfo.max.%uuid of loop-player%} < {stat.fishingfo.%uuid of loop-player%}:
+            set {stat.fishingfo.max.%uuid of loop-player%} to {stat.fishingfo.%uuid of loop-player%}
+        
+        set {stat.additionhealth.%uuid of loop-player%} to 0
+        add {level.farming.%uuid of loop-player%}*{level.bonus.farming.stat.more} to {stat.additionhealth.%uuid of loop-player%}
+        add {level.mining.%uuid of loop-player%}*{level.bonus.mining.stat.more} to {stat.additionhealth.%uuid of loop-player%}
+        add {level.fishing.%uuid of loop-player%}*{level.bonus.fishing.stat.more} to {stat.additionhealth.%uuid of loop-player%}
+        add (0.1*{collection.main.sum.%uuid of loop-player%}) to {stat.additionhealth.%uuid of loop-player%}
+
+        set {stat.additiondamage.%uuid of loop-player%} to 0
+        add {level.combat.%uuid of loop-player%}*{level.bonus.combat.stat} to {stat.additiondamage.%uuid of loop-player%}
+        add (0.1*{collection.main.sum.%uuid of loop-player%}) to {stat.additiondamage.%uuid of loop-player%}
+
+        set {stat.additioncc.%uuid of loop-player%} to 0
+        add {level.combat.%uuid of loop-player%}*{level.bonus.combat.stat.more} to {stat.additioncc.%uuid of loop-player%}
+
+        set {stat.dr.%uuid of loop-player%} to 0
+        add {level.boss.%uuid of loop-player%}*{level.bonus.boss.stat.more} to {stat.dr.%uuid of loop-player%}
+
+        set {stat.additionexp.%uuid of loop-player%} to 0
+        add {level.boss.%uuid of loop-player%}*{level.bonus.boss.stat} to {stat.additionexp.%uuid of loop-player%}
+
+
+
+        wipe loop-player's sidebar
+        set {_money} to loop-player's money
+        set name of sidebar of loop-player to "   &f&l%loop-player%  "
+        set score "&6&l소지금:  %{_money}% G" in sidebar of loop-player to 13
+        set score "&e&l수집품:  &e&l%{collection.main.sum.%uuid of loop-player%}%&6&l/&e&l%{collection.main.sum.max}%" in sidebar of loop-player to 12
+
+        set score "&f        " in sidebar of loop-player to 11
+
+        if {world.time.%uuid of loop-player%} is 1:
+            set score "&f&l현재 시간 - &8☽&l 밤" in sidebar of loop-player to 10
+        else:
+            set score "&f&l현재 시간 - &6☼&l 아침" in sidebar of loop-player to 10
+        set score "&f  " in sidebar of loop-player to 9
+ 
+        if {event.farming.start} is 1:
+            set score "&f&l현재 이벤트:" in sidebar of loop-player to 7
+            set score "&a&l농사 컨테스트 &f&l- &e&l%{event.time.left}%&f&l분 남음" in sidebar of loop-player to 6
+            set score "&f&l이벤트 점수: &a&l%{event.farming.points.%uuid of loop-player%}%" in sidebar of loop-player to 5
+        else if {event.mining.start} is 1:
+            set score "&f&l현재 이벤트:" in sidebar of loop-player to 7
+            set score "&a&l채광 컨테스트 &f&l- &e&l%{event.time.left}%&f&l분 남음" in sidebar of loop-player to 6
+            set score "&f&l이벤트 점수: &a&l%{event.mining.points.%uuid of loop-player%}%" in sidebar of loop-player to 5
+        else if {event.fishing.start} is 1:
+            set score "&f&l현재 이벤트:" in sidebar of loop-player to 7
+            set score "&a&l낚시 컨테스트 &f&l- &e&l%{event.time.left}%&f&l분 남음" in sidebar of loop-player to 6
+            set score "&f&l이벤트 점수: &a&l%{event.fishing.points.%uuid of loop-player%}%" in sidebar of loop-player to 5
+        else:
+            set score "&f&l다음 이벤트:" in sidebar of loop-player to 7
+            set score "%{event.display::%{event.period.kind}%}%&f&l - %{event.%{event.name::%{event.period.kind}%}%.time::%{event.period}%}%" in sidebar of loop-player to 6
+
+        if loop-player's tool is hoe:
+            set score "&f" in sidebar of loop-player to 4
+            set score "&6☘ &l농사 행운: &a&l%{stat.farmingfo.%uuid of loop-player%}%" in sidebar of loop-player to 3
+        
+        if loop-player's tool is fishing rod:
+            set score "&f" in sidebar of loop-player to 4
+            set score "&6☘ &l낚시 행운: &a&l%{stat.fishingfo.%uuid of loop-player%}%" in sidebar of loop-player to 3
+            set score "&3α &l낚시 크리쳐 확률: &a&l%{fishing.catch.creature.%uuid of loop-player%}%%%" in sidebar of loop-player to 2
+            set score "&3α &l수집형 물고기 확률: &a&l%{fishing.catch.trophy.%uuid of loop-player%}%%%" in sidebar of loop-player to 1
+
+        if loop-player's tool is pickaxe:
+            set score "&f" in sidebar of loop-player to 4
+            set score "&6☘ &l채광 행운: &a&l%{stat.miningfo.%uuid of loop-player%}%" in sidebar of loop-player to 3

@@ -1,0 +1,33 @@
+every 1 ticks:
+    loop all players:
+        set {fishing.equipment.creature.%uuid of loop-player%} to 0
+        set {fishing.equipment.trophy.%uuid of loop-player%} to 0
+        set {fishing.fortune.equipment.%uuid of loop-player%} to 0
+        if name of loop-player's tool is "&a&l초보 낚시꾼의 낚싯대":
+            add 1 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 0 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 50 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&9&l중급 낚시꾼의 낚싯대":
+            add 1.5 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 0 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 100 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&5&l고급진 낚싯대":
+            add 2.5 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 1 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 150 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&6&l장인의 낚싯대":
+            add 4 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 1.5 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 200 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&d&l타오르는 낚싯대":
+            add 6 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 2 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 250 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&b&l지옥불 낚싯대":
+            add 9 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 2.5 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 300 to {fishing.fortune.equipment.%uuid of loop-player%}
+        else if name of loop-player's tool is "&4&l바다의 지배자":
+            add 60 to {fishing.equipment.creature.%uuid of loop-player%}
+            add 3 to {fishing.equipment.trophy.%uuid of loop-player%}
+            add 350 to {fishing.fortune.equipment.%uuid of loop-player%}

@@ -1,0 +1,42 @@
+function setMiningVariable():
+    set {mining.ore::*} to (stone), (deepslate), (end stone), (obsidian), (coal ore), (deepslate coal ore), (copper ore), (deepslate copper ore), (iron ore), (deepslate iron ore), (gold ore), (deepslate gold ore), (lit redstone ore), (deepslate redstone ore), (lapis lazuli ore), (deepslate lapis lazuli ore), (nether quartz ore), (nether gold ore), (diamond ore), (deepslate diamond ore), (emerald ore), (deepslate emerald ore)
+    set {mining.ore.exp::*} to 1, 1, 1, 20, 5, 5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 10, 10, 15, 15
+
+on break:
+    set {_check} to 0
+    loop 10 times:
+        loop 10 times:
+            if player's chunk is chunk at coords {_x}-3, {_z}-5 in "world":
+                set {_check} to 1
+            add 1 to {_z}
+        set {_z} to 0
+        add 1 to {_x}
+
+    if {_check} is 0:
+        loop {mining.ore::*}:
+            if event-block is loop-value:
+                set {_idx} to loop-index parsed as integer
+                set {_exp} to {mining.ore.exp::%{_idx}%} * (({stat.additionexp.%uuid of player%} / 100) + 1) * {event.exp.multiplier.mining} * {item.exp.multiplier.mining}
+                add {_exp} to {level.mining.exp.%uuid of player%}
+                add {_exp} to {event.mining.points.%uuid of player%}
+                if {level.mining.%uuid of player%} is 50:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l채광 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+                else:
+                    if ({level.mining.exp.%uuid of player%}/{level.exp.cap::%{level.mining.%uuid of player%}+1%}) < 1:
+                        send action bar "&a&l+%{_exp}%&f&l의 &a&l채광 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.mining.exp.%uuid of player%}/{level.exp.cap::%{level.mining.%uuid of player%}+1%}*100%%%" to player
+                    else:
+                        send action bar "&a&l+%{_exp}%&f&l의 &a&l채광 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+
+                if {_idx} > 4:
+                    set {_drops::*} to drops of event-block
+                    cancel drops
+
+                    set {_guaranted} to rounded down ({stat.miningfo.%uuid of player%}/100)
+                    add 1 to {_guaranted}
+                    set {_percent} to mod({stat.miningfo.%uuid of player%},100)
+                    loop {_guaranted} times:
+                        drop {_drops::*} at event-location
+                    chance of {_percent}%:
+                        drop {_drops::*} at event-location
+
+            

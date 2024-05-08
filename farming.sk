@@ -1,0 +1,95 @@
+function setFarmingVariable():
+    set {farming.item::*} to (wheat plant[age=7]) and (carrot plant[age=7]), (potato plant[age=7]), (beetroot plant[age=3]), (melon), (pumpkin), (cocoa plant[age=2]), (nether wart plant[age=3])
+    set {farming.plant::*} to (wheat plant) and (carrot plant), (potato plant), (beetroot plant), (melon), (pumpkin), (cocoa plant), (nether wart plant), (sugar cane), (melon stem), (pumpkin stem)
+    set {farming.exp::*} to 8 and 8, 8, 4, 8, 8, 4, 4
+
+on left click:
+    set {_check} to 0
+    if event-location is in "world":
+        loop {chunks.%uuid of player%::*}:
+            if event-location's chunk is loop-value:
+                set {_check} to 1
+
+    if {_check} is 0:
+        loop {farming.plant::*}:
+            if event-block is loop-value:
+                cancel event
+                send "&c소유하지 않은 토지의 작물을 캘 수 없습니다." to player
+
+        if event-block is sugar cane:
+            cancel event
+            send "&c소유하지 않은 토지의 작물을 캘 수 없습니다." to player
+
+on break:
+    set {_check} to 0
+    set {_z} to 0
+    set {_x} to 0
+    loop 10 times:
+        loop 10 times:
+            if player's chunk is chunk at coords {_x}-3, {_z}-5 in "world":
+                set {_check} to 1
+            add 1 to {_z}
+        set {_z} to 0
+        add 1 to {_x}
+
+    if {_check} is 0:
+        loop {farming.item::*}:
+            if event-block is loop-value:
+                set {_idx} to loop-index
+                set {_exp} to {farming.exp::%{_idx}%} * (({stat.additionexp.%uuid of player%} / 100) + 1) * {event.exp.multiplier.farming} * {item.exp.multiplier.farming}
+                add {_exp} to {level.farming.exp.%uuid of player%}
+                add {_exp} to {event.farming.points.%uuid of player%}
+                if {level.farming.%uuid of player%} is 50:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+                else:
+                    if ({level.farming.exp.%uuid of player%}/{level.exp.cap::%{level.farming.%uuid of player%}+1%}) < 1:
+                        send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.farming.exp.%uuid of player%}/{level.exp.cap::%{level.farming.%uuid of player%}+1%}*100%%%" to player
+                    else:
+                        send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+
+                set {_drops::*} to drops of event-block
+                cancel drops
+
+                set {_guaranted} to rounded down ({stat.farmingfo.%uuid of player%}/100)
+                add 1 to {_guaranted}
+                set {_percent} to mod({stat.farmingfo.%uuid of player%},100)
+                loop {_guaranted} times:
+                    drop {_drops::*} at event-location
+                chance of {_percent}%:
+                    drop {_drops::*} at event-location
+
+        if event-block is sugar cane:
+            if block above event-block is sugar cane:
+                if block below event-block is sugar cane:
+                    set {_exp} to 3 * (({stat.additionexp.%uuid of player%} / 100) + 1) * {event.exp.multiplier.farming} * {item.exp.multiplier.farming}
+                    add {_exp} to {level.farming.exp.%uuid of player%}
+                    if {level.farming.%uuid of player%} is 50:
+                        send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+                    else:
+                        if ({level.farming.exp.%uuid of player%}/{level.exp.cap::%{level.farming.%uuid of player%}+1%}) < 1:
+                            send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.farming.exp.%uuid of player%}/{level.exp.cap::%{level.farming.%uuid of player%}+1%}*100%%%" to player
+                        else:
+                            send action bar "&a&l+%{_exp}%&f&l의 &a&l농사 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+
+                    set {_drops::*} to drops of event-block
+                    set {_updrops::*} to drops of block above event-block
+                    cancel drops
+
+                    set {_guaranted} to rounded down ({stat.farmingfo.%uuid of player%}/100)
+                    add 1 to {_guaranted}
+                    set {_percent} to mod({stat.farmingfo.%uuid of player%},100)
+                    loop {_guaranted} times:
+                        drop {_drops::*} at event-location
+                        drop {_updrops::*} at event-location
+                    chance of {_percent}%:
+                        drop {_drops::*} at event-location
+                        drop {_updrops::*} at event-location
+
+on block place of pumpkin:
+    set event-block to air
+    send "&c해당 블럭은 설치가 불가능 합니다. 아이템을 1개 압수합니다." to player
+
+on block place of melon:
+    set event-block to air
+    send "&c해당 블럭은 설치가 불가능 합니다. 아이템을 1개 압수합니다." to player
+

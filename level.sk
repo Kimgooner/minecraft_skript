@@ -1,0 +1,188 @@
+command /clearlevel:
+    permission: op
+    trigger:
+        set {level.combat.%uuid of player%} to 0
+        set {level.farming.%uuid of player%} to 0
+        set {level.mining.%uuid of player%} to 0
+        set {level.fishing.%uuid of player%} to 0
+        set {level.boss.%uuid of player%} to 0
+
+        set {level.combat.exp.%uuid of player%} to 0
+        set {level.farming.exp.%uuid of player%} to 0
+        set {level.mining.exp.%uuid of player%} to 0
+        set {level.fishing.exp.%uuid of player%} to 0
+        set {level.boss.exp.%uuid of player%} to 0
+
+command /getexp [<number>] [<number>]:
+    permission: op
+    trigger:
+        set {level.%{level.name::%arg-1%}%.exp.%uuid of player%} to arg-2 
+
+function setLevelVariable():
+    set {level.counter::*} to "&f&l--------------------" and "&e&l-&f&l-------------------", "&e&l--&f&l------------------" , "&e&l---&f&l-----------------" , "&e&l----&f&l----------------" , "&e&l-----&f&l---------------" , "&e&l------&f&l--------------" , "&e&l-------&f&l-------------" , "&e&l--------&f&l------------" , "&e&l---------&f&l-----------", "&e&l----------&f&l----------", "&e&l-----------&f&l---------", "&e&l------------&f&l--------", "&e&l-------------&f&l-------", "&e&l--------------&f&l------", "&e&l---------------&f&l-----", "&e&l----------------&f&l----", "&e&l-----------------&f&l---", "&e&l------------------&f&l--", "&e&l-------------------&f&l-", "&e&l--------------------"
+    set {level.exp.cap::*} to 50 and 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500, 5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1100000, 1200000, 1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1900000, 2000000, 2100000, 2200000, 2300000, 2400000, 2500000, 2600000, 2750000, 2900000, 3100000, 3400000, 3700000, 4000000
+    set {level.name::*} to "combat" and "farming", "mining", "fishing", "boss"
+    set {level.name.slot::*} to 11 and 12, 13, 14, 15 
+    set {level.name.item::*} to (stone sword) and (golden hoe), (stone pickaxe), (fishing rod), (skeleton skull)
+    set {level.name.display::*} to "전투 특화" and "농사 특화", "채광 특화", "낚시 특화", "던전 특화"
+    set {level.name.lore::*} to "&7&l몬스터들과 싸워서 경험치를 획득하세요!" and "&7&l작물을 수확하여 경험치를 획득하세요!", "&7&l광물을 캐고 희귀한 자원을 얻어 경험치를 획득하세요!", "&7&l물고기를 낚아 경험치를 획득하세요!", "&7&l강적들과 싸워서 경험치를 획득하세요!"
+    set {level.bonus.name::*} to "전투광" and "트랙터", "탐험가", "바다 파수꾼", "공대장"
+    set {level.bonus.stat.name::*} to "&3⚔ &l추가 데미지", "&6☘ &l농사 행운", "&6☘ &l채광 행운", "&6☘ &l낚시 행운", "&5☯ &l추가 경험치"
+    set {level.bonus.combat.stat} to 0.5
+    set {level.bonus.farming.stat} to 4
+    set {level.bonus.mining.stat} to 4
+    set {level.bonus.fishing.stat} to 4
+    set {level.bonus.boss.stat} to 0.5
+
+    set {level.bonus.stat.more.name::*} to "&9✴ &l치명타 확률", "&c❤ &l추가 체력", "&c❤ &l추가 체력", "&c❤ &l추가 체력", "&3🕸 &l데미지 감소"
+    set {level.bonus.combat.stat.more} to 0.5
+    set {level.bonus.farming.stat.more} to 0.5
+    set {level.bonus.mining.stat.more} to 0.5
+    set {level.bonus.fishing.stat.more} to 0.5
+    set {level.bonus.boss.stat.more} to 0.2
+
+    set {level.bonus.global.stat.name} to "&6☘ &l모든 행운"
+    set {level.bonus.global.stat} to 2
+
+    set {level.gui.slot::*} to 9 and 18, 27, 28, 29, 20, 11, 2, 3, 4, 13, 22, 31, 32, 33, 24, 15, 6, 7, 8, 17, 26, 35, 44, 53
+
+function makelevelStat(p:player):
+    loop {level.name::*}:
+        set {_idx} to loop-index parsed as integer
+        set {_value} to (rounded down ({level.%loop-value%.exp.%uuid of {_p}%} / {level.exp.cap::%{level.%loop-value%.%uuid of {_p}%}+1%}) * 20) + 1
+        if {level.%loop-value%.%uuid of {_p}%} is 50:
+            set slot {level.name.slot::%{_idx}%} of current inventory of {_p} to shiny {level.name.item::%{_idx}%} with all item flags named "&a&l%{level.name.display::%{_idx}%}%" with lore "%{level.name.lore::%{_idx}%}%" and "" and "&a&lMAX!" and "%{level.counter::21}% &e&l%regex({level.%loop-value%.exp.%uuid of {_p}%})%&6&l/&e&lMAX" and "" and "&7&l레벨 50 달성 보상:" and " &e&l%{level.bonus.name::%{_idx}%}% 50" and "  &a&l+%{level.bonus.%loop-value%.stat}*50% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+%{level.bonus.%loop-value%.stat.more}*50% %{level.bonus.stat.more.name::%{_idx}%}%" and "" and "  &a&l+%{level.bonus.global.stat}*({level.%loop-value%.%uuid of {_p}%})% %{level.bonus.global.stat.name}%"
+        else:
+            set slot {level.name.slot::%{_idx}%} of current inventory of {_p} to {level.name.item::%{_idx}%} with all item flags named "&a&l%{level.name.display::%{_idx}%}%" with lore "%{level.name.lore::%{_idx}%}%" and "" and "&7&l%{level.%loop-value%.%uuid of {_p}%}+1%레벨 까지 남은 경험치: &e&l%{level.%loop-value%.exp.%uuid of {_p}%}/{level.exp.cap::%{level.%loop-value%.%uuid of {_p}%}+1%}*100%%%" and "%{level.counter::%{_value}%}% &e&l%regex({level.%loop-value%.exp.%uuid of {_p}%})%&6&l/&e&l%regex({level.exp.cap::%{level.%loop-value%.%uuid of {_p}%}+1%})%" and "" and "&7&l레벨 %{level.%loop-value%.%uuid of {_p}%}+1% 달성 보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{level.%loop-value%.%uuid of {_p}%}+1%" and "  &a&l+&8&l%{level.bonus.%loop-value%.stat}*{level.%loop-value%.%uuid of {_p}%}%➡&a&l%{level.bonus.%loop-value%.stat}*({level.%loop-value%.%uuid of {_p}%}+1)% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%loop-value%.stat.more}*{level.%loop-value%.%uuid of {_p}%}%➡&a&l%{level.bonus.%loop-value%.stat.more}*({level.%loop-value%.%uuid of {_p}%}+1)% %{level.bonus.stat.more.name::%{_idx}%}%" and "" and "  &a&l+&8&l%{level.bonus.global.stat}*{level.%loop-value%.%uuid of {_p}%}%➡&a&l%{level.bonus.global.stat}*({level.%loop-value%.%uuid of {_p}%}+1)% %{level.bonus.global.stat.name}%"
+
+function levelpagefirst(p:player, idx:number):
+    set {_inv} to chest inventory with 6 rows named "&8&l%{level.name.display::%{_idx}%}%"
+    set {_} to 0
+    loop 54 times:
+        set slot {_} of {_inv} to black stained glass pane named "&f"
+        add 1 to {_} 
+
+    set {_value} to (rounded down ({level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%} / {level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%}) * 20) + 1
+    set slot 0 of {_inv} to {level.name.item::%{_idx}%} with all item flags named "&a&l%{level.name.display::%{_idx}%}%" with lore "%{level.name.lore::%{_idx}%}%" and "" and "&7&l%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%레벨 까지 남은 경험치: &e&l%{level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%}/{level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%}*100%%%" and "%{level.counter::%{_value}%}% &e&l%regex({level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%})%&6&l/&e&l%regex({level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%})%"
+    loop {level.gui.slot::*}:
+        set {_count} to loop-index parsed as integer
+        if {_count} <= {level.%{level.name::%{_idx}%}%.%uuid of {_p}%}:
+            set slot loop-value of {_inv} to {_count} of green stained glass pane named "&a&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+        else if {_count} is {level.%{level.name::%{_idx}%}%.%uuid of {_p}%} + 1:
+            set slot loop-value of {_inv} to {_count} of yellow stained glass pane named "&e&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+        else:
+            set slot loop-value of {_inv} to {_count} of red stained glass pane named "&c&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+    set slot 50 of {_inv} to arrow with all item flags named "&a&l레벨 26 - 50" with lore "" and "&e&l클릭하여 이동"
+    set slot 49 of {_inv} to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+    open {_inv} to {_p}
+
+function levelpagesecond(p:player, idx:number):
+    set {_inv} to chest inventory with 6 rows named "&8&l%{level.name.display::%{_idx}%}%"
+    set {_} to 0
+    loop 54 times:
+        set slot {_} of {_inv} to black stained glass pane named "&f"
+        add 1 to {_} 
+
+    set {_value} to (rounded down ({level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%} / {level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%}) * 20) + 1
+    set slot 0 of {_inv} to {level.name.item::%{_idx}%} with all item flags named "&a&l%{level.name.display::%{_idx}%}%" with lore "%{level.name.lore::%{_idx}%}%" and "" and "&7&l%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%레벨 까지 남은 경험치: &e&l%{level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%}/{level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%}*100%%%" and "%{level.counter::%{_value}%}% &e&l%{level.%{level.name::%{_idx}%}%.exp.%uuid of {_p}%}%&6&l/&e&l%{level.exp.cap::%{level.%{level.name::%{_idx}%}%.%uuid of {_p}%}+1%}%"
+    loop {level.gui.slot::*}:
+        set {_count} to loop-index parsed as integer
+        add 25 to {_count}
+        if {_count} <= {level.%{level.name::%{_idx}%}%.%uuid of {_p}%}:
+            set slot loop-value of {_inv} to {_count} of green stained glass pane named "&a&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+        else if {_count} is {level.%{level.name::%{_idx}%}%.%uuid of {_p}%} + 1:
+            set slot loop-value of {_inv} to {_count} of yellow stained glass pane named "&e&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+        else:
+            set slot loop-value of {_inv} to {_count} of red stained glass pane named "&c&l%{level.name.display::%{_idx}%}% %{_count}% 레벨" with lore "&7&l보상:" and " &e&l%{level.bonus.name::%{_idx}%}% %{_count}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat}*{_count}% %{level.bonus.stat.name::%{_idx}%}%" and "  &a&l+&8&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*({_count}-1)%➡&a&l%{level.bonus.%{level.name::%{_idx}%}%.stat.more}*{_count}% %{level.bonus.stat.more.name::%{_idx}%}%"
+    set slot 48 of {_inv} to arrow with all item flags named "&a&l레벨 1 - 25" with lore "" and "&e&l클릭하여 이동"
+    set slot 49 of {_inv} to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+    open {_inv} to {_p}
+
+command /level:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            set {_sum} to 0
+            add {level.combat.%uuid of player%} to {_sum}
+            add {level.farming.%uuid of player%} to {_sum}
+            add {level.mining.%uuid of player%} to {_sum}
+            add {level.fishing.%uuid of player%} to {_sum}
+            add {level.boss.%uuid of player%} to {_sum}
+            open chest inventory with 3 rows named "&8&l특화 레벨" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+            makelevelStat(player)
+            set slot 4 of current inventory to diamond sword with all item flags named "&a&l특화 레벨" with lore "&7&l모든 특화 레벨을 확인합니다." and "" and "&6&l현재 평균 레벨 - %{_sum}/5%"
+            set slot 22 of current inventory to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+
+on inventory click:
+    if inventory name is "&8&l특화 레벨":
+        cancel event
+        set {_clicked} to clicked raw slot
+        loop {level.name.slot::*}:
+            if {_clicked} is loop-value:
+                set {_idx} to loop-index parsed as integer
+                play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                levelpagefirst(player, {_idx})
+        
+        if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/menu"
+            set {menu.isCommand.%uuid of player%} to 0
+
+    set {_name} to inventory name
+    loop {level.name.display::*}:
+        if "&8&l%loop-value%" is {_name}:
+            cancel event
+            set {_idx} to loop-index parsed as integer
+            set {_clicked} to clicked raw slot
+            set {_item} to clicked slot
+            if {_clicked} is 48:
+                if {_item} is not black stained glass pane:
+                    play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                    levelpagefirst(player, {_idx})
+            if {_clicked} is 49:
+                set {menu.isCommand.%uuid of player%} to 1
+                play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                execute player command "/level"
+                set {menu.isCommand.%uuid of player%} to 0
+            if {_clicked} is 50:
+                if {_item} is not black stained glass pane:
+                    play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                    levelpagesecond(player, {_idx})
+
+every 1 tick:
+    loop all players:
+        loop {level.name::*}:
+            if {level.%loop-value-2%.exp.%uuid of loop-player%} >= {level.exp.cap::%{level.%loop-value-2%.%uuid of loop-player%}+1%}:
+                set {_idx} to loop-index parsed as integer
+                set {_over} to {level.%loop-value-2%.exp.%uuid of loop-player%}
+                remove {level.exp.cap::%{level.%loop-value-2%.%uuid of loop-player%}+1%} from {_over}
+                set {level.%loop-value-2%.exp.%uuid of loop-player%} to {_over}
+                add 1 to {level.%loop-value-2%.%uuid of loop-player%}
+                broadcast "&f&l%loop-player%가 &a&l%{level.name.display::%{_idx}%}% %{level.%loop-value-2%.%uuid of loop-player%}% &f&l레벨을 달성했습니다!"
+                play sound "entity.player.levelup" with volume 0.5 and pitch 1 to loop-player
+
+function regex(n: object) :: text:
+    if "%{_n}%" contains ".":
+        set {_s::*} to split "%{_n}%" at "."
+        set {_n} to "%a({_s::1})%.%last 2 characters of {_s::2}%"
+        return "%{_n}%"
+    else:
+        set {_n} to a("%{_n}%")
+        return "%{_n} ? 0%"
+function a(b: text) :: text:
+    if length of {_b} > 3:
+        return "%a(first length of {_b} - 3 characters of {_b})%,%last 3 characters of {_b}%"
+    return {_b}
+
+function ExprIndexWeight(weight:numbers) :: integer:
+    add {_weight::*} to {_total}
+    set {_i} to random number from 0 to {_total}
+    loop {_weight::*}:
+        add loop-value to {_w}
+        if {_i} <= {_w}:
+            return loop-index parsed as integer
+

@@ -1,0 +1,153 @@
+function setMaterialVariable():
+    set {chest.fishing.item::*} to cod and salmon, pufferfish, tropical fish, {enchanted_cod}, {enchanted_salmon}, {enchanted_pufferfish}, {enchanted_tropical}, {copperfish}, {silverfish}, {goldfish}, {diamondfish}
+
+command /chest.material:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            open chest inventory with 3 rows named "&8&l재료 상자" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 11 of current inventory to rotten flesh named "&a&l전투 재료" with lore "" and "&e&l클릭하여 이동"
+            set slot 12 of current inventory to wheat named "&a&l농사 재료" with lore "" and "&e&l클릭하여 이동"
+            set slot 13 of current inventory to coal named "&a&l채광 재료" with lore "" and "&e&l클릭하여 이동"
+            set slot 14 of current inventory to {diamondfish} named "&a&l낚시 재료" with lore "" and "&e&l클릭하여 이동"
+            set slot 15 of current inventory to skeleton head named "&a&l던전 재료" with lore "" and "&e&l클릭하여 이동"
+            set slot 22 of current inventory to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+
+function reloadChest(p:player):
+    loop {chest.fishing.item::*}:
+        set {_idx} to loop-index parsed as integer
+        if {_idx} <= 8:
+            if {_idx} >= 5:
+                set slot {collection.slot::%{_idx}%} of current inventory of {_p} to shiny loop-value with all item flags with lore "&f&l현재 보유량: &a&l%regex({chest.fishing.%uuid of {_p}%::%{_idx}%})%" and "" and "&f&l좌클릭을 눌러 모든 인벤토리의 해당 아이템을 상자에 넣습니다." and "&7&l우클릭을 눌러 64개의 상자의 해당 아이템을 인벤토리로 가져옵니다."
+            else:
+                set slot {collection.slot::%{_idx}%} of current inventory of {_p} to loop-value with all item flags with lore "&f&l현재 보유량: &a&l%regex({chest.fishing.%uuid of {_p}%::%{_idx}%})%" and "" and "&f&l좌클릭을 눌러 모든 인벤토리의 해당 아이템을 상자에 넣습니다." and "&7&l우클릭을 눌러 64개의 상자의 해당 아이템을 인벤토리로 가져옵니다."
+        else:
+            set slot {collection.slot::%{_idx}%} of current inventory of {_p} to loop-value with all item flags with lore "&f&l현재 보유량: &a&l%regex({chest.fishing.%uuid of {_p}%::%{_idx}%})%" and "" and "&f&l좌클릭을 눌러 모든 인벤토리의 해당 아이템을 상자에 넣습니다." and "&7&l우클릭을 눌러 64개의 상자의 해당 아이템을 인벤토리로 가져옵니다."
+
+command /chest.material.combat:
+    trigger:
+
+command /chest.material.farming:
+    trigger:
+
+command /chest.material.mining:
+    trigger:
+
+command /chest.material.fishing:
+    trigger:
+        open chest inventory with 6 rows named "&8&l낚시 상자" to player
+        set {_} to 0
+        loop 54 times:
+            set slot {_} of current inventory to black stained glass pane named "&f"
+            add 1 to {_}
+
+        set {_} to 10
+        loop 4 times:
+            loop 7 times:
+                set slot {_} of current inventory to air 
+                add 1 to {_}
+            add 2 to {_}
+
+        set slot 49 of current inventory to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+        set slot 50 of current inventory to chest with all item flags named "&a&l모든 아이템 넣기" with lore "&7&l인벤토리에 있는 모든 아이템을 상자에 수집합니다." and "" and "&e&l클릭하여 이동"
+        reloadChest(player)
+
+on inventory click:
+    if inventory name is "&8&l낚시 상자":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 49:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 50:
+            set {_sum} to 0
+            loop {chest.fishing.item::*}:
+                set {_idx} to loop-index parsed as integer
+                set {_amount} to number of loop-value in player's inventory
+                remove {_amount} of loop-value from player's inventory
+                add {_amount} to {chest.fishing.%uuid of player%::%{_idx}%}
+                add {_amount} to {_sum}
+            play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+            send "&f&l총 &a&l%regex({_sum})%&f&l개의 아이템을 재료 상자에 넣었습니다." to player
+            reloadChest(player)
+        else:
+            if clicked slot is not air:
+                if click type is left mouse button:
+                    loop {collection.slot::*}:
+                        if {_clicked} is loop-value:
+                            set {_idx} to loop-index parsed as integer
+                            set {_amount} to number of {chest.fishing.item::%{_idx}%} in player's inventory
+                            if {_amount} is 0:
+                                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                                send "&c&l해당 아이템을 인벤토리에 가지고 있지 않습니다!" to player
+                            else:
+                                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                                add {_amount} to {chest.fishing.%uuid of player%::%{_idx}%}
+                                remove {_amount} of {chest.fishing.item::%{_idx}%} from player's inventory
+                                reloadChest(player)
+
+                else if click type is right mouse button:
+                    loop {collection.slot::*}:
+                        if {_clicked} is loop-value:
+                            set {_idx} to loop-index parsed as integer
+                            if {chest.fishing.%uuid of player%::%{_idx}%} is 0:
+                                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                                send "&c&l해당 아이템을 재료 상자에 가지고 있지 않습니다!" to player
+                            else:
+                                if player's inventory has enough space for 64 of bedrock:
+                                    play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                                    if {chest.fishing.%uuid of player%::%{_idx}%} < 64:
+                                        set {_amount} to {chest.fishing.%uuid of player%::%{_idx}%}
+                                        remove {_amount} from {chest.fishing.%uuid of player%::%{_idx}%}
+                                        add {_amount} of {chest.fishing.item::%{_idx}%} to player's inventory
+                                    else:
+                                        remove 64 from {chest.fishing.%uuid of player%::%{_idx}%}
+                                        add 64 of {chest.fishing.item::%{_idx}%} to player's inventory
+                                    reloadChest(player)
+                                else:
+                                    play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                                    send "&c&l인벤토리에 최소 1칸의 공간이 필요 합니다." to player
+
+command /chest.material.boss:
+    trigger:
+
+on inventory click:
+    if inventory name is "&8&l재료 상자":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 11:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material.combat"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 12:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material.farming"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 13:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material.mining"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 14:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material.fishing"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 15:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material.boss"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/menu"
+            set {menu.isCommand.%uuid of player%} to 0

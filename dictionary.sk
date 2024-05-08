@@ -1,0 +1,82 @@
+function setDicVariable():
+    set {dictionary.fishing.grade::*} to (light gray dye) and (light gray dye), (light gray dye), (lime dye), (lime dye), (blue dye), (light gray dye), (lime dye), (lime dye), (blue dye), (blue dye), (purple dye), (lime dye), (blue dye), (blue dye), (purple dye), (purple dye), (orange dye), (blue dye), (purple dye), (purple dye), (orange dye), (orange dye), (magenta dye), (purple dye), (orange dye), (orange dye), (magenta dye), (magenta dye), (cyan dye), (orange dye), (magenta dye), (magenta dye), (cyan dye), (cyan dye), (red dye), (magenta dye), (magenta dye), (cyan dye), (cyan dye), (red dye), (red dye)
+    # set {dictionary.fishing.name::*} to
+
+command /dic.fishing:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open chest inventory with 3 rows named "&8&l낚시 도감" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 11 of current inventory to fishing rod with all item flags named "&a&l낚시 장비" with lore "" and "&e&l클릭하여 이동!"
+            set slot 13 of current inventory to pufferfish with all item flags named "&a&l낚시 크리쳐" with lore "" and "&e&l클릭하여 이동!"
+            set slot 15 of current inventory to {blobfish_diamond} with all item flags named "&a&l수집형 물고기" with lore "" and "&e&l클릭하여 이동!"
+
+command /dic.fishing.equip:
+    trigger:
+
+command /dic.fishing.creature:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open chest inventory with 6 rows named "&8&l낚시 크리쳐" to player
+            set {_} to 0
+            loop 63 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set {_} to 1
+            set {_idx} to 1
+            loop 6 times:
+                loop 7 times:
+                    if {creature.level.cap::%{_idx}%} <= {level.fishing.%uuid of player%}: 
+                        set slot {_} of current inventory to {dictionary.fishing.grade::%{_idx}%}
+                    else:
+                        set slot {_} of current inventory to gray dye named "&c&l미확인 크리쳐" with lore "&f&l제한 레벨 - &c&l%{creature.level.cap::%{_idx}%}%"
+                    add 1 to {_}
+                    add 1 to {_idx}
+                add 2 to {_}
+
+command /dic.fishing.trophy:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open chest inventory with 3 rows named "&8&l수집형 물고기" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 9 of current inventory to {blobfish_diamond} named "&f&l블랍 피쉬" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{blobfish.count.%uuid of player%::1}%" and "&7&lSILVER: %{blobfish.count.%uuid of player%::2}%" and "&6&lGOLD: %{blobfish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{blobfish.count.%uuid of player%::4}%"
+            set slot 10 of current inventory to {golden_fish_diamond} named "&f&l금색 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{golden_fish.count.%uuid of player%::1}%" and "&7&lSILVER: %{golden_fish.count.%uuid of player%::2}%" and "&6&lGOLD: %{golden_fish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{golden_fish.count.%uuid of player%::4}%"
+            set slot 11 of current inventory to {karate_fish_diamond} named "&f&l가라테 피쉬" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{karate_fish.count.%uuid of player%::1}%" and "&7&lSILVER: %{karate_fish.count.%uuid of player%::2}%" and "&6&lGOLD: %{karate_fish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{karate_fish.count.%uuid of player%::4}%"
+            set slot 12 of current inventory to {moldfin_diamond} named "&f&l단단한 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{moldfin.count.%uuid of player%::1}%" and "&7&lSILVER: %{moldfin.count.%uuid of player%::2}%" and "&6&lGOLD: %{moldfin.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{moldfin.count.%uuid of player%::4}%"
+            set slot 13 of current inventory to {skeleton_fish_diamond} named "&f&l뼈 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{skeleton_fish.count.%uuid of player%::1}%" and "&7&lSILVER: %{skeleton_fish.count.%uuid of player%::2}%" and "&6&lGOLD: %{skeleton_fish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{skeleton_fish.count.%uuid of player%::4}%"
+            set slot 14 of current inventory to {slugfish_diamond} named "&f&l썩은 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{slugfish.count.%uuid of player%::1}%" and "&7&lSILVER: %{slugfish.count.%uuid of player%::2}%" and "&6&lGOLD: %{slugfish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{slugfish.count.%uuid of player%::4}%"
+            set slot 15 of current inventory to {soul_fish_diamond} named "&f&l영혼 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{soul_fish.count.%uuid of player%::1}%" and "&7&lSILVER: %{soul_fish.count.%uuid of player%::2}%" and "&6&lGOLD: %{soul_fish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{soul_fish.count.%uuid of player%::4}%"
+            set slot 16 of current inventory to {vanille_diamond} named "&f&l그냥 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{vanille.count.%uuid of player%::1}%" and "&7&lSILVER: %{vanille.count.%uuid of player%::2}%" and "&6&lGOLD: %{vanille.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{vanille.count.%uuid of player%::4}%"
+            set slot 17 of current inventory to {volcanic_stonefish_diamond} named "&f&l화산 물고기" with lore "" and "&f&l잡은 횟수:" and "&8&lBRONZE: %{volcanic_stonefish.count.%uuid of player%::1}%" and "&7&lSILVER: %{volcanic_stonefish.count.%uuid of player%::2}%" and "&6&lGOLD: %{volcanic_stonefish.count.%uuid of player%::3}%" and "&b&lDIAMOND: %{volcanic_stonefish.count.%uuid of player%::4}%"
+
+on inventory click:
+    if inventory name is "&8&l낚시 도감":
+        cancel event
+        if clicked raw slot is 15:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/dic.fishing.trophy"
+            set {menu.isCommand.%uuid of player%} to 0
+
+        if clicked raw slot is 13:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/dic.fishing.creature"
+            set {menu.isCommand.%uuid of player%} to 0
+
+    if inventory name is "&8&l수집형 물고기":
+        cancel event
+
+    if inventory name is "&8&l낚시 크리쳐":
+        cancel event
+

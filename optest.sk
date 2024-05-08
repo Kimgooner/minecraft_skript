@@ -1,0 +1,76 @@
+command /op.resetstat:
+    permission: op
+    trigger:
+        set {level.combat.%uuid of player%} to 0
+        set {level.farming.%uuid of player%} to 0
+        set {level.mining.%uuid of player%} to 0
+        set {level.fishing.%uuid of player%} to 0
+        set {level.boss.%uuid of player%} to 0
+
+        set {level.combat.exp.%uuid of player%} to 0
+        set {level.farming.exp.%uuid of player%} to 0
+        set {level.mining.exp.%uuid of player%} to 0
+        set {level.fishing.exp.%uuid of player%} to 0
+        set {level.boss.exp.%uuid of player%} to 0
+
+        set {event.farming.points.%uuid of player%} to 0
+        set {event.fishing.points.%uuid of player%} to 0
+        set {event.mining.points.%uuid of player%} to 0
+
+        set {stat.farmingfo.max.%uuid of player%} to 0
+        set {stat.fishingfo.max.%uuid of player%} to 0
+        set {stat.miningfo.max.%uuid of player%} to 0
+        
+        set {collection.start.%uuid of player%} to 1
+        set {collection.main.sum.%uuid of player%} to 0 
+        set {collection.main.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.1.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.2.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.3.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.4.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.5.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.6.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.7.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.8.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.9.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.10.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.11.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.12.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.13.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.14.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.15.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.16.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.17.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.18.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.19.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.20.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.21.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.22.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.23.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.24.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.25.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.26.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.27.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.28.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+        set {blobfish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {golden_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {karate_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {moldfin.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {skeleton_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {slugfish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {soul_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {vanille.count.%uuid of player%::*} to 0 and 0, 0, 0
+        set {volcanic_stonefish.count.%uuid of player%::*} to 0 and 0, 0, 0
+
+        set {trophy.fish.sum.%uuid of player%::*} to 0 and 0, 0, 0
+        set {trophy.fish.1.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+        set {trophy.fish.2.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+        set {trophy.fish.3.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+        set {trophy.fish.4.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+
+        set {chest.combat.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {chest.farming.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {chest.mining.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {chest.fishing.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {chest.boss.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

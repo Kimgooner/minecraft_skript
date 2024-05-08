@@ -1,0 +1,84 @@
+on inventory click:
+    if clicked slot is nether star named "&a&l메뉴 &8&l(우클릭)":
+        cancel event
+        send "&c&l메뉴 슬롯은 변경할 수 없습니다." to player
+
+on join:
+    set slot 8 of player's inventory to nether star named "&a&l메뉴 &8&l(우클릭)" with lore "&7&l우클릭을 눌러 메뉴를 엽니다." and "" and "&e&l우클릭하여 열기!"
+
+on drop:
+    if event-item is nether star named "&a&l메뉴 &8&l(우클릭)":
+        cancel event
+        send "&c&l메뉴 슬롯은 변경할 수 없습니다." to player
+
+every 1 tick:
+    loop all players:
+        set {_target} to nether star named "&a&l메뉴 &8&l(우클릭)"
+        set {_amount} to number of {_target} in loop-player's inventory
+
+        if {_amount} >= 2:
+            remove {_amount} of {_target} from loop-player's inventory
+            set slot 8 of loop-player's inventory to nether star named "&a&l메뉴 &8&l(우클릭)" with lore "&7&l우클릭을 눌러 메뉴를 엽니다." and "" and "&e&l우클릭하여 열기!"
+        
+        if slot 8 of loop-player's inventory is not {_target}:
+            remove 64 of {_target} from loop-player's inventory
+            set {_item} to slot 8 of loop-player's inventory
+            drop {_item} at loop-player's location
+            set slot 8 of loop-player's inventory to nether star named "&a&l메뉴 &8&l(우클릭)" with lore "&7&l우클릭을 눌러 메뉴를 엽니다." and "" and "&e&l우클릭하여 열기!"
+
+command /menu:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            set {_sum} to 0
+            add {level.combat.%uuid of player%} to {_sum}
+            add {level.farming.%uuid of player%} to {_sum}
+            add {level.mining.%uuid of player%} to {_sum}
+            add {level.fishing.%uuid of player%} to {_sum}
+            add {level.boss.%uuid of player%} to {_sum}
+            open chest inventory with 7 rows named "&8&l메뉴" to player
+            set {menu.isCommand.%uuid of player%} to 0
+            set {_} to 0
+            loop 63 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 13 of current inventory to player's skull named "&e&l%player%의 정보" with lore "" and "&6☘ &l농사 행운: &a&l%{stat.farmingfo.%uuid of player%}%" and "&6☘ &l채광 행운: &a&l%{stat.miningfo.%uuid of player%}%" and "&6☘ &l낚시 행운: &a&l%{stat.fishingfo.%uuid of player%}%" and "&c❤ &l추가 체력: &a&l%{stat.additionhealth.%uuid of player%}%" and "&9⚔ &l추가 데미지: &a&l%{stat.additiondamage.%uuid of player%}%" and "&9⚔ &l치명타 확률: &a&l%{stat.additioncc.%uuid of player%}%" and "&9🕸 &l데미지 감소: &a&l%{stat.dr.%uuid of player%}%" and "&3☯ &l추가 경험치: &a&l%{stat.additionexp.%uuid of player%}%"
+            set slot 20 of current inventory to diamond sword with all item flags named "&a&l특화 레벨" with lore "&7&l모든 특화 레벨을 확인합니다." and "" and "&6&l현재 평균 레벨 - &e&l%{_sum}/5%" and "" and "&e&l클릭하여 열기!"
+            set slot 21 of current inventory to painting with all item flags named "&a&l수집품" with lore "&7&l모든 수집품을 확인합니다." and "" and "&6&l당신의 수집 현황 - &e&l%{collection.main.sum.%uuid of player%}%&6&l/&e&l%{collection.main.sum.max}%" and "&7&l현재 수집품 보상:" and " &a&l+%{collection.main.sum.%uuid of player%}% &6☘ &l모든 행운" and " &a&l+%0.1*{collection.main.sum.%uuid of player%}% &9⚔ &l추가 데미지" and " &a&l+%0.1*{collection.main.sum.%uuid of player%}% &c❤ &l추가 체력" and "" and "&e&l클릭하여 열기!"
+            set slot 22 of current inventory to chest with all item flags named "&a&l재료 상자" with lore "&7&l현재 보유중인 재료를 확인합니다." and "" and "&e&l클릭하여 열기!"
+            set slot 23 of current inventory to crafting table with all item flags named "&a&l원격 제작대" with lore "&7&l작업대를 설치할 필요 없이 바로 사용해보세요!" and "" and "&e&l클릭하여 열기!"
+            set slot 24 of current inventory to ender chest with all item flags named "&a&l원격 엔더 상자" with lore "&7&l엔더 상자를 설치할 필요 없이 바로 사용해보세요!" and "" and "&e&l클릭하여 열기!"
+
+on right click:
+    if player's tool is nether star named "&a&l메뉴 &8&l(우클릭)":
+        set {menu.isCommand.%uuid of player%} to 1
+        play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+        execute player command "/menu"
+        set {menu.isCommand.%uuid of player%} to 0
+
+on inventory click:
+    if inventory name is "&8&l메뉴":
+        cancel event
+        if clicked raw slot is 20:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/level"
+            set {menu.isCommand.%uuid of player%} to 0
+        if clicked raw slot is 21:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/collection"
+            set {menu.isCommand.%uuid of player%} to 0
+        if clicked raw slot is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/chest.material"
+            set {menu.isCommand.%uuid of player%} to 0
+        if clicked raw slot is 23:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open crafting table to player
+        if clicked raw slot is 24:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open ender chest of player to player
+
+        

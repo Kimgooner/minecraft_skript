@@ -1,0 +1,155 @@
+command /setEventVariable:
+    permission: op
+    trigger:
+        set {event.exp.multiplier.combat} to 1
+        set {item.exp.multiplier.combat} to 1
+
+        set {event.exp.multiplier.farming} to 1
+        set {item.exp.multiplier.farming} to 1
+
+        set {event.exp.multiplier.mining} to 1
+        set {item.exp.multiplier.mining} to 1
+
+        set {event.exp.multiplier.fishing} to 1
+        set {item.exp.multiplier.fishing} to 1
+
+        set {event.exp.multiplier.boss} to 1
+        set {item.exp.multiplier.boss} to 1
+
+        set {event.farming.time::*} to "00:10" and "03:10", "06:10", "09:10", "12:10", "15:10", "18:10", "21:10"
+        set {event.mining.time::*} to "01:10" and "04:10", "07:10", "10:10", "13:10", "16:10", "19:10", "22:10"
+        set {event.fishing.time::*} to "02:10" and "05:10", "08:10", "11:10", "14:10", "17:10", "20:10", "23:10"
+
+        set {event.time.left} to 0
+        set {event.farming.start} to 0
+        set {event.mining.start} to 0
+        set {event.fishing.start} to 0
+
+        set {event.period} to 1
+        set {event.period.kind} to 1
+        set {event.name::*} to "farming" and "mining", "fishing"
+        set {event.display::*} to "&a&l농사 컨테스트" and "&a&l채광 컨테스트", "&a&l낚시 컨테스트"
+
+every 1 minutes:
+    if {event.time.left} > 0:
+        remove 1 from {event.time.left}
+        if {event.time.left} is 0:
+            send title "&e&l컨테스트가 종료되었습니다!!" to all players for 5 seconds
+            send "&e&l컨테스트가 종료되었습니다!!" to all players
+            loop all players:
+                play sound "block.anvil.land" with volume 0.6 and pitch 1 to loop-player
+                if {event.farming.start} is 1:
+                    send "&f&l당신의 점수는... &a&l%{event.farming.points.%uuid of loop-player%}%&f&l점 입니다." to loop-player
+                    send "" to loop-player
+                    if {event.farming.points.%uuid of loop-player%} is not 0:
+                        set {_event.score.list::%loop-player%} to {event.farming.points.%uuid of loop-player%}
+                else if {event.mining.start} is 1:
+                    send "&f&l당신의 점수는... &a&l%{event.mining.points.%uuid of loop-player%}%&f&l점 입니다." to loop-player
+                    send "" to loop-player
+                    if {event.mining.points.%uuid of loop-player%} is not 0:
+                        set {_event.score.list::%loop-player%} to {event.mining.points.%uuid of loop-player%}
+                else if {event.fishing.start} is 1:
+                    send "&f&l당신의 점수는... &a&l%{event.fishing.points.%uuid of loop-player%}%&f&l점 입니다." to loop-player
+                    send "" to loop-player
+                    if {event.fishing.points.%uuid of loop-player%} is not 0:
+                        set {_event.score.list::%loop-player%} to {event.fishing.points.%uuid of loop-player%}
+
+            loop {_event.score.list::*}:
+                set {_name::%loop-value%} to loop-index
+                set {_value::%loop-value%} to loop-value
+            loop {_value::*}:
+                add loop-value to {_lowest::*}
+            loop number of {_lowest::*} times:
+                set {_n} to number of {_lowest::*} - loop-number + 1
+                add {_lowest::%{_n}%} to {_highest::*}
+            set {_players} to number of {_highest::*}
+            send "&a&l%{_players}%&f&l명의 참가자가 있었습니다." to all players
+            if {_players} is 0:
+                send "&c&l참여한 플레이어가 없습니다." to all players
+            else:
+                send "&f&l순위는 다음과 같습니다:" to all players
+                send "" to all players
+                set {_n} to 0
+                loop {_highest::*}:
+                    add 1 to {_n}
+                    if {_n} is 1:
+                        send "&6&l%{_n}%등: %{_name::%loop-value%}% - %{_event.score.list::%{_name::%loop-value%}%}%점" to all players
+                    else if {_n} is 2:
+                        send "&e&l%{_n}%등: %{_name::%loop-value%}% - %{_event.score.list::%{_name::%loop-value%}%}%점" to all players
+                    else if {_n} is 3:
+                        send "&f&l%{_n}%등: %{_name::%loop-value%}% - %{_event.score.list::%{_name::%loop-value%}%}%점" to all players
+                    else:
+                        send "&7&l%{_n}%등: %{_name::%loop-value%}% - %{_event.score.list::%{_name::%loop-value%}%}%점" to all players
+                send "" to all players
+
+            set {event.farming.start} to 0
+            set {event.mining.start} to 0
+            set {event.fishing.start} to 0
+
+            set {event.exp.multiplier.farming} to 1
+            set {event.exp.multiplier.mining} to 1
+            set {event.exp.multiplier.fishing} to 1
+
+    loop {event.farming.time::*}:
+        set {_time} to "%now%"
+        if {_time} is loop-value:
+            send title "&a&l농사 컨테스트가 시작되었습니다!!" with subtitle "&f&l30분간 농사 경험치를 2배로 획득하며, 가장 많은 경험치를 획득한 사람에게 보상이 주어집니다." to all players for 5 seconds
+            send "&a&l농사 컨테스트가 시작되었습니다!!" to all players
+            set {event.time.left} to 30
+            set {event.farming.start} to 1
+            set {event.exp.multiplier.farming} to 2
+            add 1 to {event.period.kind}
+            loop all offline players:
+                play sound "item.goat_horn.sound.0" with volume 0.6 and pitch 2.2 to loop-offline player
+                set {event.farming.points.%uuid of loop-offline player%} to 0
+
+    loop {event.mining.time::*}:
+        set {_time} to "%now%"
+        if {_time} is loop-value:
+            send title "&a&l채광 컨테스트가 시작되었습니다!!" with subtitle "&f&l30분간 채광 경험치를 2배로 획득하며, 가장 많은 경험치를 획득한 사람에게 보상이 주어집니다." to all players for 5 seconds
+            send "&a&l채광 컨테스트가 시작되었습니다!!" to all players
+            set {event.time.left} to 30
+            set {event.mining.start} to 1
+            set {event.exp.multiplier.mining} to 2
+            add 1 to {event.period.kind}
+            loop all offline players:
+                play sound "item.goat_horn.sound.0" with volume 0.6 and pitch 2.2 to loop-offline player
+                set {event.mining.points.%uuid of loop-offline player%} to 0
+
+    loop {event.fishing.time::*}:
+        set {_time} to "%now%"
+        if {_time} is loop-value:
+            send title "&a&l낚시 컨테스트가 시작되었습니다!!" with subtitle "&f&l30분간 낚시 경험치를 2배로 획득하며, 가장 많은 경험치를 획득한 사람에게 보상이 주어집니다." to all players for 5 seconds
+            send "&a&l낚시 컨테스트가 시작되었습니다!!" to all players
+            set {event.time.left} to 30
+            set {event.fishing.start} to 1
+            set {event.period.kind} to 1
+            set {event.exp.multiplier.fishing} to 2
+            add 1 to {event.period}
+            if {event.period} is 9:
+                set {event.period} to 1
+            loop all offline players:
+                play sound "item.goat_horn.sound.0" with volume 0.6 and pitch 2.2 to loop-offline player
+                set {event.fishing.points.%uuid of loop-offline player%} to 0
+
+command /seteventperiod [<number>] [<number>]:
+    permission: op
+    trigger:
+        set {event.period} to arg-1
+        set {event.period.kind} to arg-2
+
+command /soundtest:
+    trigger:
+        play sound "item.goat_horn.sound.0" with volume 0.6 and pitch 2.2 to player
+
+command /timevalue:
+    trigger:
+        set {_time} to now
+        send "%{_time}%" to player
+
+command /multipler:
+    trigger:
+        send "농사 : %{event.exp.multiplier.farming}%" to player
+        send "채광 : %{event.exp.multiplier.mining}%" to player
+        send "낚시 : %{event.exp.multiplier.fishing}%" to player
+

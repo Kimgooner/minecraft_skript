@@ -1,0 +1,585 @@
+function setFishingVariable():
+    set {normal.fish::*} to cod and salmon, pufferfish, tropical fish
+    set {normal.name::*} to "대구" and "연어", "복어", "열대어"
+
+    set {trophy.fish::*} to "blobfish" and "golden_fish", "karate_fish", "moldfin", "skeleton_fish", "slugfish", "soul_fish", "vanille", "volcanic_stonefish"
+    set {trophy.blobfish::*} to {blobfish_bronze} and {blobfish_silver}, {blobfish_gold}, {blobfish_diamond}
+    set {trophy.golden_fish::*} to {golden_fish_bronze} and {golden_fish_silver}, {golden_fish_gold}, {golden_fish_diamond}
+    set {trophy.karate_fish::*} to {karate_fish_bronze} and {karate_fish_silver}, {karate_fish_gold}, {karate_fish_diamond}
+    set {trophy.moldfin::*} to {moldfin_bronze} and {moldfin_silver}, {moldfin_gold}, {moldfin_diamond}
+    set {trophy.skeleton_fish::*} to {skeleton_fish_bronze} and {skeleton_fish_silver}, {skeleton_fish_gold}, {skeleton_fish_diamond}
+    set {trophy.slugfish::*} to {slugfish_bronze} and {slugfish_silver}, {slugfish_gold}, {slugfish_diamond}
+    set {trophy.soul_fish::*} to {soul_fish_bronze} and {soul_fish_silver}, {soul_fish_gold}, {soul_fish_diamond}
+    set {trophy.vanille::*} to {vanille_bronze} and {vanille_silver}, {vanille_gold}, {vanille_diamond}
+    set {trophy.volcanic_stonefish::*} to {volcanic_stonefish_bronze} and {volcanic_stonefish_silver}, {volcanic_stonefish_gold}, {volcanic_stonefish_diamond}
+    set {trophy.word::*} to "&8&lBRONZE" and "&7&lSILVER", "&6&LGOLD", "&b&lDIAMOND"
+
+    set {trophy.slot::*} to 9 and 10, 11, 12, 13, 14, 15, 16, 17
+    set {trophy.exp::*} to 30 and 100, 200, 500
+
+    set {normal.fish.item::*} to {enchanted_cod} and {enchanted_salmon}, {enchanted_pufferfish}, {enchanted_tropical}, {silverfish}, {goldfish}, {diamondfish}
+    set {normal.fish.name::*} to "&a&l압축된 대구" and "&a&l압축된 연어", "&a&l압축된 복어", "&a&l압축된 열대어", "&5&l은으로 도금된 물고기", "&6&l금으로 도금된 물고기", "&d&l다이아몬드로 도금된 물고기"
+    set {normal.fish.index::*} to 5 and 6, 7, 8, 10, 11, 12
+    set {normal.fish.exchange::*} to "생대구" and "생연어", "복어", "열대어", "&9&l구리로 도금된 물고기", "&5&l은으로 도금된 물고기", "&6&l금으로 도금된 물고기"
+    set {normal.fish.exchange.item::*} to cod and salmon, pufferfish, tropical fish, {copperfish}, {silverfish}, {goldfish}
+    set {normal.fish.exchange.count::*} to 64 and 64, 64, 64, 40, 40, 40
+    set {normal.fish.exchange.index::*} to 1 and 2, 3, 4, 9, 10, 11
+
+    set {creature.list::*} to "CrazySquid" and "CrazyDolphin", "CrazyAxolotl", "CrazyGlowSquid", "WeakGuardian", "Dogfish", "DrownedVillager", "DrownedWarrior", "DrownedArcher", "CatFish", "TurtleFish", "DrownedRider", "AwfulSludge", "DrownedKnight", "DrownedShield", "BurningSludge", "DeepSeaProtector", "SeaMonster", "RottenCow", "FleshMonster", "StrongSeaGuardian", "DespairInSea", "WoeInSea", "DeepAbyss", "AncientAnimal", "FearInSea", "AloneInSea", "BurningBlaze", "Megalodon", "UnknownCreature", "AncientWarden", "DisInSea", "Thunder", "AbyssVillager", "AbyssShield", "AbyssWarden", "AbyssWarrior", "AbyssBlock", "AbyssKnight", "AbyssBreacher", "AbyssHorror", "LordOfTheSea"
+    set {creature.level.cap::*} to 1 and 1, 1, 2, 2, 4, 6, 8, 8, 9, 9, 11, 12, 14, 14, 17, 17, 19, 21, 23, 23, 25, 25, 26, 28, 29, 29, 30, 30, 31, 33, 34, 34, 35, 35, 36, 37, 37, 39, 39, 41, 41
+    set {creature.weight::*} to 1300 and 1300, 1300, 1000, 1000, 750, 1300, 1000, 1000, 750, 750, 500, 1000, 750, 750, 500, 500, 350, 750, 500, 500, 350, 350, 150, 500, 350, 350, 150, 150, 50, 350, 150, 150, 50, 50, 15, 150, 150, 50, 50, 15, 15
+    set {creature.exp::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  
+
+on fish:
+    if fish state is fishing:
+        set min wait time of fish hook to 5 ticks
+        set max wait time of fish hook to 15 ticks
+
+    if fish state is CAUGHT_FISH:
+        set {_normalcatch} to 100
+        set {_creaturecatch} to {fishing.catch.creature.%uuid of player%}
+        set {_trophycatch} to {fishing.catch.trophy.%uuid of player%}
+
+        remove {_creaturecatch} from {_normalcatch}
+        remove {_trophycatch} from {_normalcatch}
+
+        set {_fish} to ExprIndexWeight({_normalcatch},{_creaturecatch},{_trophycatch})
+
+        set {_guaranted} to rounded down ({stat.fishingfo.%uuid of player%}/100)
+        add 1 to {_guaranted}
+        set {_percent} to mod({stat.fishingfo.%uuid of player%},100)
+        chance of {_percent}%:
+            add 1 to {_guaranted}
+
+        if {_fish} is 1:
+            set {_normalfish} to ExprIndexWeight(1,1,1,1)
+            set item of caught entity to {_guaranted} of {normal.fish::%{_normalfish}%}
+            set {_name} to {normal.name::%{_normalfish}%}
+
+            send "&f&lNORMAL CATCH! [&a&l%{_name}%&f&l]을(를) 낚았습니다." to player
+            set {_exp} to 10 * (({stat.additionexp.%uuid of player%} / 100) + 1) * {event.exp.multiplier.fishing} * {item.exp.multiplier.fishing}
+            add {_exp} to {level.fishing.exp.%uuid of player%}
+            add {_exp} to {event.fishing.points.%uuid of player%}
+            if {level.fishing.%uuid of player%} is 50:
+                send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+            else:
+                if ({level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}) < 1:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}*100%%%" to player
+                else:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+        else if {_fish} is 2:
+            set {_id} to 1
+            set {_num} to 1
+            loop {creature.level.cap::*}:
+                if {level.fishing.%uuid of player%} >= loop-value:
+                    set {_type::%{_num}%} to {creature.list::%{_id}%}
+                    set {_weight::%{_num}%} to {creature.weight::%{_id}%}
+                    set {_exp::%{_num}%} to {creature.exp::%{_id}%}
+                    add 1 to {_num}
+                add 1 to {_id}
+            set {_get} to ExprIndexWeight({_weight::*})
+            set {_mobtype} to {_type::%{_get}%}
+            send "%{_get}%" to player
+            send "%{_type::*}%" to player
+            send "%{_weight::*}%" to player
+            send "%{_exp::*}%" to player
+            if {_mobtype} is not set:
+                send "&c줄이 끊어져 버렸습니다..." to player
+                set item of caught entity to air
+            else:
+                set item of caught entity to air
+                add {_exp::%{_get}%} to {level.fishing.exp.%uuid of player%}
+                add {_exp::%{_get}%} to {event.fishing.points.%uuid of player%}
+                if {level.fishing.%uuid of player%} is 50:
+                    send action bar "&a&l+%{_exp::%{_get}%}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+                else:
+                    if ({level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}) < 1:
+                        send action bar "&a&l+%{_exp::%{_get}%}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}*100%%%" to player
+                    else:
+                        send action bar "&a&l+%{_exp::%{_get}%}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+                set {_world} to "%world of fishing hook%"
+                set {_loc} to location of fishing hook
+                set {_am} to spawn mythicmob {_mobtype} at location {_loc} in world {_world}
+                set {_entity} to entity of activemob {_am}
+                set {_vector} to vector between {_loc} and player's location
+                push {_entity} upwards at speed 0.4
+                push {_entity} {_vector} at speed 1.3
+                send "&e&lCREATURE CATCH! %displayname of activemob {_am}%&f&l이(가) 낚였습니다!" to player
+                if {_get} >= 25:
+                    if {_get} >= 31:
+                        if {_get} >= 37:
+                            broadcast "&a&l%player%&f&l가 &c&l깨워선 안될 바다 생물&f&l을 낚았습니다!!!"
+                        else:
+                            broadcast "&a&l%player%&f&l가 &e&l아주 강력한 바다 생물&f&l을 낚았습니다.!!"
+                    else:
+                        broadcast "&a&l%player%&f&l가 &a&l강력한 바다 생물&f&l을 낚았습니다.!!"
+                    
+        else if {_fish} is 3:
+            set {_fishkind} to ExprIndexWeight(1,1,1,1,1,1,1,1,1)
+            set {_fishgrade} to ExprIndexWeight(60,29,10,1)
+            if {_fishkind} is 1:
+                set item of caught entity to {trophy.blobfish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l블랍 피쉬&f&l]을(를) 낚았습니다!" to player
+                add 1 to {blobfish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l블랍 피쉬&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 2:
+                set item of caught entity to {trophy.golden_fish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l금색 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {golden_fish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l금색 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 3:
+                set item of caught entity to {trophy.karate_fish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l가라테 피쉬&f&l]을(를) 낚았습니다!" to player
+                add 1 to {karate_fis.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l가라테 피쉬&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 4:
+                set item of caught entity to {trophy.moldfin::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l단단한 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {moldfin.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l단단한 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 5:
+                set item of caught entity to {trophy.skeleton_fish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l뼈 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {skeleton_fish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l뼈 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 6:
+                set item of caught entity to {trophy.slugfish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l썩은 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {slugfish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l썩은 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 7:
+                set item of caught entity to {trophy.soul_fish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l영혼 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {soul_fish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l영혼 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 8:
+                set item of caught entity to {trophy.vanille::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l그냥 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {vanille.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l그냥 물고기&f&l]을(를) 낚았습니다!"
+            else if {_fishkind} is 9:
+                set item of caught entity to {trophy.volcanic_stonefish::%{_fishgrade}%}
+                send "&b&lTROPHY FISH CATCH!!! %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l화산 물고기&f&l]을(를) 낚았습니다!" to player
+                add 1 to {volcanic_stonefish.count.%uuid of player%::%{_fishgrade}%}
+                if {_fishgrade} is 4:
+                    launch ball large coloured red, purple and white fading to light green and black at player's location with duration 1
+                    broadcast "%player%가 %{trophy.word::%{_fishgrade}%}%&f&l등급의 &f&l[&a&l화산 물고기&f&l]을(를) 낚았습니다!"
+            set {_exp} to {trophy.exp::%{_fishgrade}%} * (({stat.additionexp.%uuid of player%} / 100) + 1) * {event.exp.multiplier.fishing} * {item.exp.multiplier.fishing}
+            add {_exp} to {level.fishing.exp.%uuid of player%}
+            add {_exp} to {event.fishing.points.%uuid of player%}
+            if {level.fishing.%uuid of player%} is 50:
+                send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lMAX!!" to player
+            else:
+                if ({level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}) < 1:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &e&l%{level.fishing.exp.%uuid of player%}/{level.exp.cap::%{level.fishing.%uuid of player%}+1%}*100%%%" to player
+                else:
+                    send action bar "&a&l+%{_exp}%&f&l의 &a&l낚시 특화 &f&l경험치를 획득하였습니다 - &a&lLEVEL UP!!!" to player
+
+command /trophy.collection:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            open chest inventory with 3 rows named "&8&l물고기 수집가" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+            if {trophy.fish.sum.%uuid of player%::1} < 9:
+                set slot 10 of current inventory to copper block named "&8&lBRONZE &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &e&l%{trophy.fish.sum.%uuid of player%::1}%&6&l/&e&l9" and "" and "&f&l수집 완료 보상:" and "&a&l +25 &6☘ &l낚시 행운" and "&a&l +1%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            else:
+                set slot 10 of current inventory to green concrete named "&8&lBRONZE &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &a&l수집이 완료됨!" and "" and "&f&l수집 완료 보상:" and "&a&l +25 &6☘ &l낚시 행운" and "&a&l +1%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            if {trophy.fish.sum.%uuid of player%::2} < 9:
+                set slot 12 of current inventory to iron block named "&7&lSILVER &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &e&l%{trophy.fish.sum.%uuid of player%::2}%&6&l/&e&l9" and "" and "&f&l수집 완료 보상:" and "&a&l +50 &6☘ &l낚시 행운" and "&a&l +2%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            else:
+                set slot 12 of current inventory to green concrete named "&7&lSILVER &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &a&l수집이 완료됨!" and "" and "&f&l수집 완료 보상:" and "&a&l +50 &6☘ &l낚시 행운" and "&a&l +2%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!" 
+            if {trophy.fish.sum.%uuid of player%::3} < 9:
+                set slot 14 of current inventory to gold block named "&6&lGOLD &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &e&l%{trophy.fish.sum.%uuid of player%::3}%&6&l/&e&l9" and "" and "&f&l수집 완료 보상:" and "&a&l +75 &6☘ &l낚시 행운" and "&a&l +2%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            else:
+                set slot 14 of current inventory to green concrete named "&6&lGOLD &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &a&l수집이 완료됨!" and "" and "&f&l수집 완료 보상:" and "&a&l +75 &6☘ &l낚시 행운" and "&a&l +2%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            if {trophy.fish.sum.%uuid of player%::4} < 9:
+                set slot 16 of current inventory to diamond block named "&b&lDIAMOND &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &e&l%{trophy.fish.sum.%uuid of player%::4}%&6&l/&e&l9" and "" and "&f&l수집 완료 보상:" and "&a&l +100 &6☘ &l낚시 행운" and "&a&l +3%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+            else:
+                set slot 16 of current inventory to green concrete named "&b&lDIAMOND &a&l등급의 물고기 수집 현황" with lore "&f&l수집 현황 - &a&l수집이 완료됨!" and "" and "&f&l수집 완료 보상:" and "&a&l +100 &6☘ &l낚시 행운" and "&a&l +3%% &3α &l수집형 물고기 확률" and "" and "&e&l클릭하여 이동!"
+
+function makeTrophyGUI(p:player, i:number):
+    play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to {_p}
+    set {_inv} to chest inventory with 3 rows named "%{trophy.word::%{_i}%}%"
+    set {_} to 0
+    loop 27 times:
+        set slot {_} of {_inv} to black stained glass pane named "&f"
+        add 1 to {_}
+    
+    set {_} to 9
+    loop 9 times:
+        if {trophy.fish.%{_i}%.%uuid of {_p}%::%{_}-8%} is 0:
+            set slot {_} of {_inv} to {trophy.%{trophy.fish::%{_}-8%}%::%{_i}%} with lore "&c&l수집되지 않음"
+        else:
+            set slot {_} of {_inv} to green concrete named "&a&l수집이 완료됨!"
+        add 1 to {_}
+
+    set slot 22 of {_inv} to barrier named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+
+    open {_inv} to {_p}
+
+on inventory click:
+    if inventory name is "&8&l물고기 수집가":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 10:
+            makeTrophyGUI(player, 1)
+        else if {_clicked} is 12:
+            makeTrophyGUI(player, 2)
+        else if {_clicked} is 14:
+            makeTrophyGUI(player, 3)
+        else if {_clicked} is 16:
+            makeTrophyGUI(player, 4)
+
+    if inventory name is "&8&lBRONZE":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/trophy.collection"
+            set {menu.isCommand.%uuid of player%} to 0
+        loop {trophy.slot::*}:
+            if {_clicked} is loop-value:
+                if clicked slot is not green concrete:
+                    set {_idx} to loop-index parsed as integer
+                    set {_amount} to number of {trophy.%{trophy.fish::%{_idx}%}%::1} in player's inventory
+                    if {_amount} >= 1:
+                        play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                        remove 1 of {trophy.%{trophy.fish::%{_idx}%}%::1} from player's inventory
+                        add 1 to {trophy.fish.1.%uuid of player%::%{_idx}%}
+                        add 1 to {trophy.fish.sum.%uuid of player%::1}
+                        set slot {_clicked} of current inventory to green concrete named "&a&l수집이 완료됨!"
+                        if {trophy.fish.sum.%uuid of player%::1} is 9:
+                            broadcast "&f&l%player%가 &8&lBRONZE &f&l등급의 &a&l수집형 물고기 &f&l수집을 완료했습니다!"
+                    else:
+                        play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                        send "&c&l가지고 있지 않은 물고기입니다." to player
+                else:
+                    play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                    send "&c&l이미 수집이 완료된 물고기입니다!" to player
+
+    if inventory name is "&7&lSILVER":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/trophy.collection"
+            set {menu.isCommand.%uuid of player%} to 0
+        loop {trophy.slot::*}:
+            if {_clicked} is loop-value:
+                if clicked slot is not green concrete:
+                    set {_idx} to loop-index parsed as integer
+                    set {_amount} to number of {trophy.%{trophy.fish::%{_idx}%}%::2} in player's inventory
+                    if {_amount} >= 1:
+                        play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                        remove 1 of {trophy.%{trophy.fish::%{_idx}%}%::2} from player's inventory
+                        add 1 to {trophy.fish.2.%uuid of player%::%{_idx}%}
+                        add 1 to {trophy.fish.sum.%uuid of player%::2}
+                        set slot {_clicked} of current inventory to green concrete named "&a&l수집이 완료됨!"
+                        if {trophy.fish.sum.%uuid of player%::2} is 9:
+                            broadcast "&f&l%player%가 &7&lSILVER &f&l등급의 &a&l수집형 물고기 &f&l수집을 완료했습니다!"
+                    else:
+                        play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                        send "&c&l가지고 있지 않은 물고기입니다." to player
+                else:
+                    play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                    send "&c&l이미 수집이 완료된 물고기입니다!" to player
+
+    if inventory name is "&6&LGOLD":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/trophy.collection"
+            set {menu.isCommand.%uuid of player%} to 0
+        loop {trophy.slot::*}:
+            if {_clicked} is loop-value:
+                if clicked slot is not green concrete:
+                    set {_idx} to loop-index parsed as integer
+                    set {_amount} to number of {trophy.%{trophy.fish::%{_idx}%}%::3} in player's inventory
+                    if {_amount} >= 1:
+                        play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                        remove 1 of {trophy.%{trophy.fish::%{_idx}%}%::3} from player's inventory
+                        add 1 to {trophy.fish.3.%uuid of player%::%{_idx}%}
+                        add 1 to {trophy.fish.sum.%uuid of player%::3}
+                        set slot {_clicked} of current inventory to green concrete named "&a&l수집이 완료됨!"
+                        if {trophy.fish.sum.%uuid of player%::3} is 9:
+                            broadcast "&f&l%player%가 &6&LGOLD &f&l등급의 &a&l수집형 물고기 &f&l수집을 완료했습니다!"
+                    else:
+                        play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                        send "&c&l가지고 있지 않은 물고기입니다." to player
+                else:
+                    play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                    send "&c&l이미 수집이 완료된 물고기입니다!" to player
+
+    if inventory name is "&b&lDIAMOND":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            execute player command "/trophy.collection"
+            set {menu.isCommand.%uuid of player%} to 0
+        loop {trophy.slot::*}:
+            if {_clicked} is loop-value:
+                if clicked slot is not green concrete:
+                    set {_idx} to loop-index parsed as integer
+                    set {_amount} to number of {trophy.%{trophy.fish::%{_idx}%}%::4} in player's inventory
+                    if {_amount} >= 1:
+                        play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                        remove 1 of {trophy.%{trophy.fish::%{_idx}%}%::4} from player's inventory
+                        add 1 to {trophy.fish.4.%uuid of player%::%{_idx}%}
+                        add 1 to {trophy.fish.sum.%uuid of player%::4}
+                        set slot {_clicked} of current inventory to green concrete named "&a&l수집이 완료됨!"
+                        if {trophy.fish.sum.%uuid of player%::4} is 9:
+                            broadcast "&f&l%player%가 &b&lDIAMOND &f&l등급의 &a&l수집형 물고기 &f&l수집을 완료했습니다!"
+                    else:
+                        play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                        send "&c&l가지고 있지 않은 물고기입니다." to player
+                else:
+                    play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                    send "&c&l이미 수집이 완료된 물고기입니다!" to player
+
+command /fish.trade:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            open chest inventory with 3 rows named "&8&l물고기 교환" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 11 of current inventory to cod named "&a&l일반 물고기 & 재료 교환" with lore "" and "&e&l클릭하여 이동"
+            set slot 13 of current inventory to pufferfish named "&a&l낚시 크리쳐 전리품 교환" with lore "" and "&e&l클릭하여 이동"
+            set slot 15 of current inventory to {blobfish_diamond} named "&a&l수집형 물고기 교환" with lore "" and "&e&l클릭하여 이동"
+
+function tradeNormalReload(p:player):
+    loop {normal.fish.item::*}:
+        set {_idx} to loop-index parsed as integer
+        if {_idx} <= 4:
+            set slot {collection.slot::%{_idx}%} of current inventory of {_p} to shiny loop-value named "%{normal.fish.name::%{_idx}%}% &f&l(&a&l%{chest.fishing.%uuid of {_p}%::%{normal.fish.index::%{_idx}%}%}%&f&l개 보유중)" with lore "&f&l교환 물품:" and " &f&lx%{normal.fish.exchange.count::%{_idx}%}% &f&l%{normal.fish.exchange::%{_idx}%}% &f&l(&a&l%{chest.fishing.%uuid of {_p}%::%{normal.fish.exchange.index::%{_idx}%}%}%&f&l개 보유중)" and "" and "&7&l좌클릭을 눌러 1개의 아이템을 교환합니다." and "&8&l우클릭을 눌러 64개의 아이템을 교환합니다."
+        else:
+            set slot {collection.slot::%{_idx}%} of current inventory of {_p} to loop-value named "%{normal.fish.name::%{_idx}%}% &f&l(&a&l%{chest.fishing.%uuid of {_p}%::%{normal.fish.index::%{_idx}%}%}%&f&l개 보유중)" with lore "&f&l교환 물품:" and " &f&lx%{normal.fish.exchange.count::%{_idx}%}% &f&l%{normal.fish.exchange::%{_idx}%}% &f&l(&a&l%{chest.fishing.%uuid of {_p}%::%{normal.fish.exchange.index::%{_idx}%}%}%&f&l개 보유중)" and "" and "&7&l좌클릭을 눌러 1개의 아이템을 교환합니다." and "&8&l우클릭을 눌러 64개의 아이템을 교환합니다."
+
+command /fish.trade.normal:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            open chest inventory with 5 rows named "&8&l일반 물고기 & 재료 교환" to player
+            set {_} to 0
+            loop 45 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set {_} to 10
+            loop 3 times:
+                loop 7 times:
+                    set slot {_} of current inventory to air 
+                    add 1 to {_}
+                add 2 to {_}
+        
+            set slot 40 of current inventory to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+            tradeNormalReload(player)
+            
+command /fish.trade.creature:
+    trigger:
+
+function tradeTrophyReload(p:player):
+    set {_bronze} to 0
+    set {_silver} to 0
+    set {_gold} to 0
+    set {_diamond} to 0
+
+    set {_guaranted} to rounded down ({stat.fishingfo.max.%uuid of {_p}%}/100)
+    add 1 to {_guaranted}
+    set {_percent} to mod({stat.fishingfo.max.%uuid of {_p}%},100)
+
+    loop {trophy.fish::*}:
+        add number of {trophy.%loop-value%::1} in {_p}'s inventory to {_bronze}
+        add number of {trophy.%loop-value%::2} in {_p}'s inventory to {_silver}
+        add number of {trophy.%loop-value%::3} in {_p}'s inventory to {_gold}
+        add number of {trophy.%loop-value%::4} in {_p}'s inventory to {_diamond}
+    set slot 10 of current inventory of {_p} to copper block named "&8&lBRONZE &f&l등급 수집형 물고기 교환" with lore "&f&l현재 &a&l%{_bronze}%&f&l마리를 보유 중입니다." and "" and "&f&l현재 &6☘ &l낚시 행운&f&l은 &a&l%{stat.fishingfo.max.%uuid of {_p}%}%&f&l입니다." and "&f&l마리당 &a&lx%{_guaranted}%&f&l배의 보상을 확정으로 획득 가능하며," and "&a&l%{_percent}%%%&f&l의 확률로 &a&lx1&f&l배를 추가로 획득 가능합니다." and "" and "&f&l획득 가능 보상 - &9&l구리로 도금된 물고기 &f&lx1" and "&e&l클릭하여 교환!"
+    set slot 12 of current inventory of {_p} to iron block named "&7&lSILVER &f&l등급 수집형 물고기 교환" with lore "&f&l현재 &a&l%{_silver}%&f&l마리를 보유 중입니다." and "" and "&f&l현재 &6☘ &l낚시 행운&f&l은 &a&l%{stat.fishingfo.max.%uuid of {_p}%}%&f&l입니다." and "&f&l마리당 &a&lx%{_guaranted}%&f&l배의 보상을 확정으로 획득 가능하며," and "&a&l%{_percent}%%%&f&l의 확률로 &a&lx1&f&l배를 추가로 획득 가능합니다." and "" and "&f&l획득 가능 보상 - &9&l구리로 도금된 물고기 &f&lx4" and "&e&l클릭하여 교환!" 
+    set slot 14 of current inventory of {_p} to gold block named "&6&lGOLD &f&l등급 수집형 물고기 교환" with lore "&f&l현재 &a&l%{_gold}%&f&l마리를 보유 중입니다." and "" and "&f&l현재 &6☘ &l낚시 행운&f&l은 &a&l%{stat.fishingfo.max.%uuid of {_p}%}%&f&l입니다." and "&f&l마리당 &a&lx%{_guaranted}%&f&l배의 보상을 확정으로 획득 가능하며," and "&a&l%{_percent}%%%&f&l의 확률로 &a&lx1&f&l배를 추가로 획득 가능합니다." and "" and "&f&l획득 가능 보상 - &9&l구리로 도금된 물고기 &f&lx16" and "&e&l클릭하여 교환!" 
+    set slot 16 of current inventory of {_p} to diamond block named "&b&lDIAMOND &f&l등급 수집형 물고기 교환" with lore "&f&l현재 &a&l%{_diamond}%&f&l마리를 보유 중입니다." and "" and "&f&l현재 &6☘ &l낚시 행운&f&l은 &a&l%{stat.fishingfo.max.%uuid of {_p}%}%&f&l입니다." and "&f&l마리당 &a&lx%{_guaranted}%&f&l배의 보상을 확정으로 획득 가능하며," and "&a&l%{_percent}%%%&f&l의 확률로 &a&lx1&f&l배를 추가로 획득 가능합니다." and "" and "&f&l획득 가능 보상 - &5&l은으로 도금된 물고기 &f&lx1" and "&e&l클릭하여 교환!"  
+
+command /fish.trade.trophy:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            open chest inventory with 3 rows named "&8&l수집형 물고기 교환" to player
+            set {_} to 0
+            loop 27 times:
+                set slot {_} of current inventory to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set slot 22 of current inventory to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+            tradeTrophyReload(player)
+
+on inventory click:
+    if inventory name is "&8&l물고기 교환":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 11:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/fish.trade.normal"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 13:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/fish.trade.creature"
+            set {menu.isCommand.%uuid of player%} to 0
+        else if {_clicked} is 15:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/fish.trade.trophy"
+            set {menu.isCommand.%uuid of player%} to 0
+
+    if inventory name is "&8&l일반 물고기 & 재료 교환":
+        cancel event
+        set {_clicked} to clicked raw slot
+        if {_clicked} is 40:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/fish.trade"
+            set {menu.isCommand.%uuid of player%} to 0
+        else:
+            loop {collection.slot::*}:
+                if click type is left mouse button:
+                    if {_clicked} is loop-value:
+                        set {_idx} to loop-index parsed as integer
+                        if clicked slot is not air:
+                            if {chest.fishing.%uuid of player%::%{normal.fish.exchange.index::%{_idx}%}%} < {normal.fish.exchange.count::%{_idx}%}:
+                                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                                send "&c&l교환 아이템이 부족합니다." to player
+                            else:
+                                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                                send "%{normal.fish.name::%{_idx}%}% &a&l1&f&l개를 재료 상자에 추가했습니다." to player
+                                remove {normal.fish.exchange.count::%{_idx}%} from {chest.fishing.%uuid of player%::%{normal.fish.exchange.index::%{_idx}%}%}
+                                add 1 to {chest.fishing.%uuid of player%::%{normal.fish.index::%{_idx}%}%}
+                                tradeNormalReload(player)
+                else if click type is right mouse button:
+                    if {_clicked} is loop-value:
+                        set {_idx} to loop-index parsed as integer
+                        if clicked slot is not air:
+                            if {chest.fishing.%uuid of player%::%{normal.fish.exchange.index::%{_idx}%}%} < {normal.fish.exchange.count::%{_idx}%}:
+                                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                                send "&c&l교환 아이템이 부족합니다." to player
+                            else:
+                                set {_count} to 0
+                                loop 64 times:
+                                    if {chest.fishing.%uuid of player%::%{normal.fish.exchange.index::%{_idx}%}%} >= ({_count}+1)*{normal.fish.exchange.count::%{_idx}%}:
+                                        add 1 to {_count}
+                                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                                send "%{normal.fish.name::%{_idx}%}% &a&l%{_count}%&f&l개를 재료 상자에 추가했습니다." to player
+                                remove ({normal.fish.exchange.count::%{_idx}%}*{_count}) from {chest.fishing.%uuid of player%::%{normal.fish.exchange.index::%{_idx}%}%}
+                                add {_count} to {chest.fishing.%uuid of player%::%{normal.fish.index::%{_idx}%}%}
+                                tradeNormalReload(player)
+
+    if inventory name is "&8&l수집형 물고기 교환":
+        cancel event
+        set {_clicked} to clicked raw slot
+        set {_guaranted} to rounded down ({stat.fishingfo.max.%uuid of player%}/100)
+        add 1 to {_guaranted}
+        set {_percent} to mod({stat.fishingfo.max.%uuid of player%},100)
+        if {_clicked} is 10:
+            set {_bronze} to 0
+            loop {trophy.fish::*}:
+                set {_amount} to number of {trophy.%loop-value%::1} in player's inventory
+                remove {_amount} of {trophy.%loop-value%::1} from player's inventory
+                add {_amount} to {_bronze}
+            
+            if {_bronze} is 0:
+                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                send "&c&l해당 등급의 수집형 물고기를 보유하고 있지 않습니다." to player
+            else:
+                set {_mul} to {_guaranted}
+                chance of {_percent}%:
+                    add 1 to {_mul}
+                set {_get} to ({_mul}*{_bronze}*1)    
+                add {_get} to {chest.fishing.%uuid of player%::9}
+                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                send "&f&l재료 상자에 &a&l%regex({_get})%&f&l개의 &9&l구리로 도금된 물고기&f&l를 추가했습니다." to player
+                tradeTrophyReload(player)
+        if {_clicked} is 12:
+            set {_bronze} to 0
+            loop {trophy.fish::*}:
+                set {_amount} to number of {trophy.%loop-value%::2} in player's inventory
+                remove {_amount} of {trophy.%loop-value%::2} from player's inventory
+                add {_amount} to {_silver}
+
+            if {_silver} is 0:
+                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                send "&c&l해당 등급의 수집형 물고기를 보유하고 있지 않습니다." to player
+            else:
+                set {_mul} to {_guaranted}
+                chance of {_percent}%:
+                    add 1 to {_mul}
+                set {_get} to ({_mul}*{_silver}*4)    
+                add {_get} to {chest.fishing.%uuid of player%::9}
+                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                send "&f&l재료 상자에 &a&l%regex({_get})%&f&l개의 &9&l구리로 도금된 물고기&f&l를 추가했습니다." to player
+                tradeTrophyReload(player)
+        if {_clicked} is 14:
+            set {_bronze} to 0
+            loop {trophy.fish::*}:
+                set {_amount} to number of {trophy.%loop-value%::3} in player's inventory
+                remove {_amount} of {trophy.%loop-value%::3} from player's inventory
+                add {_amount} to {_gold}
+
+            if {_gold} is 0:
+                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                send "&c&l해당 등급의 수집형 물고기를 보유하고 있지 않습니다." to player
+            else:
+                set {_mul} to {_guaranted}
+                chance of {_percent}%:
+                    add 1 to {_mul}
+                set {_get} to ({_mul}*{_gold}*16)    
+                add {_get} to {chest.fishing.%uuid of player%::9}
+                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                send "&f&l재료 상자에 &a&l%regex({_get})%&f&l개의 &9&l구리로 도금된 물고기&f&l를 추가했습니다." to player
+                tradeTrophyReload(player)
+        if {_clicked} is 16:
+            set {_bronze} to 0
+            loop {trophy.fish::*}:
+                set {_amount} to number of {trophy.%loop-value%::4} in player's inventory
+                remove {_amount} of {trophy.%loop-value%::4} from player's inventory
+                add {_amount} to {_diamond}
+
+            if {_diamond} is 0:
+                play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to player
+                send "&c&l해당 등급의 수집형 물고기를 보유하고 있지 않습니다." to player
+            else:
+                set {_mul} to {_guaranted}
+                chance of {_percent}%:
+                    add 1 to {_mul}
+                set {_get} to ({_mul}*{_diamond}*1)    
+                add {_get} to {chest.fishing.%uuid of player%::10}
+                play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to player
+                send "&f&l재료 상자에 &a&l%regex({_get})%&f&l개의 &5&l은으로 도금된 물고기&f&l를 추가했습니다." to player
+                tradeTrophyReload(player)
+        else if {_clicked} is 22:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/fish.trade"
+            set {menu.isCommand.%uuid of player%} to 0
+
+

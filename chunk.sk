@@ -1,0 +1,126 @@
+command /chunk.unloadall:
+    permission: op
+    trigger:
+        loop all offline players:
+            delete {chunks.%uuid of loop-offline player%::*}
+            set {chunks.count.%uuid of loop-offline player%} to 1
+
+command /chunk.check:
+    permission: op
+    trigger:
+        set {_check} to 0
+        loop 10 times:
+            loop 10 times:
+                if player's chunk is chunk at coords {_x}-3, {_z}-5:
+                    set {_check} to 1
+                add 1 to {_z}
+            set {_z} to 0
+            add 1 to {_x}
+
+        if {_check} is 1:
+            send "&c서버 소유의 토지 입니다." to player
+        else:
+            send "%player's chunk%" to player
+
+command /mychunk:
+    trigger:
+        send "&f당신이 현재 소유한 토지는 &a&l%{chunks.count.%uuid of player%}-1%&f개 입니다." to player
+        if {chunks.count.%uuid of player%} is not 1:
+            send "&f당신이 소유한 토지의 위치는 다음과 같습니다:"
+            loop {chunks.%uuid of player%::*}:
+                send " %loop-value%" to player
+
+command /chunk.get:
+    trigger:
+        set {_check} to 0
+        loop 10 times:
+            loop 10 times:
+                if player's chunk is chunk at coords {_x}-3, {_z}-5:
+                    set {_check} to 1
+                add 1 to {_z}
+            set {_z} to 0
+            add 1 to {_x}
+
+        loop all offline players:
+            loop {chunks.%uuid of loop-offline player%::*}:
+                if loop-value-2 is player's chunk:
+                    set {_name} to loop-offline player
+                    set {_check} to 2
+
+        if {_check} is 0:
+            send "&f%player's chunk%&a를 구매했습니다!" to player
+            remove {chunk.need::%{chunks.count.%uuid of player%}%} of player's tool from player's inventory
+            add player's chunk to {chunks.%uuid of player%::*}
+            add 1 to {chunks.count.%uuid of player%}
+        else if {_check} is 1:
+            send "&c서버 소유의 토지는 구매할 수 없습니다." to player
+        else:
+            send "&c이미 소유자가 있는 토지입니다. 소유자는 &f%{_name}%&c입니다." to player
+
+every 1 seconds:
+    loop all players:
+        set {_check} to 0
+        set {_x} to 0
+        set {_z} to 0
+        loop 10 times:
+            loop 10 times:
+                if loop-player's chunk is chunk at coords {_x}-3, {_z}-5 in "world":
+                    set {_check} to 1
+                add 1 to {_z}
+            set {_z} to 0
+            add 1 to {_x}
+
+        if {_check} is 1:
+            remove swiftness from loop-player
+            apply potion of swiftness of tier 2 without any particles to loop-player for 22 ticks
+
+command /getPermLobby:
+    permission: op
+    trigger:
+        set {perm.block.%uuid of player%} to 1
+
+command /purgeallPerm:
+    permission: op
+    trigger:
+        loop all offline players:
+            set {perm.block.%uuid of loop-offline player%} to 0
+
+on right click:
+    if event-location is in "world":
+        if player's tool is hoe:
+            set {_y} to y-coordinate of event-block
+            if {_y} is greater than -50:
+                cancel event
+                send "&c농경지는 최대 10칸의 높이에서만 만들 수 있습니다." to player
+
+on right click:
+    loop all offline players:
+        loop {chunks.%uuid of loop-offline player%::*}:
+            if loop-value-2 is player's chunk:
+                if player is not loop-offline player:
+                    send "&c현재 토지의 소유자는 &f%loop-offline player%&f입니다. 침범할 수 없습니다." to player
+                    cancel event
+                
+on left click:
+    loop all offline players:
+        loop {chunks.%uuid of loop-offline player%::*}:
+            if loop-value-2 is player's chunk:
+                if player is not loop-offline player:
+                    send "&c현재 토지의 소유자는 &f%loop-offline player%&f입니다. 침범할 수 없습니다." to player
+                    cancel event
+
+on left click:
+    loop all offline players:
+        loop {chunks.%uuid of loop-offline player%::*}:
+            if loop-value-2 is event-block's chunk:
+                if player is not loop-offline player:
+                    send "&c현재 토지의 소유자는 &f%loop-offline player%&f입니다. 침범할 수 없습니다." to player
+                    cancel event
+
+on right click:
+    loop all offline players:
+        loop {chunks.%uuid of loop-offline player%::*}:
+            if loop-value-2 is clicked block's chunk:
+                if player is not loop-offline player:
+                    send "&c현재 토지의 소유자는 &f%loop-offline player%&f입니다. 침범할 수 없습니다." to player
+                    cancel event

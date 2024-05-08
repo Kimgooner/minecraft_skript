@@ -1,0 +1,26 @@
+on right click on entity:
+    if entity's name is "&e&l낚시 도감":
+        send "&e&l낚시 도감 &f&lNPC &f: 난 낚시의 모든 것을 알고 있어." to player
+        set {menu.isCommand.%uuid of player%} to 1
+        execute player command "/dic.fishing"
+        set {menu.isCommand.%uuid of player%} to 0
+
+    if entity's name is "&e&l물고기 수집가":
+        send "&e&l물고기 수집가 &f&lNPC &f: 희귀한 물고기를 가지고 있어?" to player
+        set {menu.isCommand.%uuid of player%} to 1
+        execute player command "/trophy.collection"
+        set {menu.isCommand.%uuid of player%} to 0
+
+    if entity's name is "&e&l물고기 교환":
+        send "&e&l물고기 교환 &f&lNPC &f: 어느 물고기든 다 살테니까 가져와!" to player
+        set {menu.isCommand.%uuid of player%} to 1
+        execute player command "/fish.trade"
+        set {menu.isCommand.%uuid of player%} to 0
+
+    if entity's name is "&e&l허브로 돌아가기":
+        send "&e&l허브로 돌아가기 &f&lNPC &f: 허브로 돌려보내 줄게." to player
+        teleport player to location(49.5, -60, 0.5, world "world", 90, 0)
+
+    if entity's name is "&e&l낚시터로 이동":
+        send "&e&l낚시터로 이동 &f&lNPC &f: 낚시터로 갈거야?" to player
+        teleport player to location(681.5, -60, -117.5, world "world", -90, 0)

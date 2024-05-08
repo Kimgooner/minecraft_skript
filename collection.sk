@@ -1,0 +1,292 @@
+function reloadItem(p:player, inv:inventory, s:number, i:number):
+    if {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%} is {collection.%{_s}%.max::%{_i}%}:
+        set slot {collection.slot::%{_i}%} of current inventory of {_p} to green concrete with all item flags named "&a&l완료됨!" with lore "&e&l%{collection.%{_s}%.max::%{_i}%}%&6&l/&e&l%{collection.%{_s}%.max::%{_i}%}%"
+    else:
+        set slot {collection.slot::%{_i}%} of current inventory of {_p} to {collection.%{_s}%.max::%{_i}%} of {collection.%{_s}%.item::%{_i}%} with all item flags with lore "&e&l%{collection.%{_s}%.count.%uuid of {_p}%::%{_i}%}%&6&l/&e&l%{collection.%{_s}%.max::%{_i}%}%" and "" and "&e&l클릭하여 수집"
+
+function collectItem(p:player, inv:inventory, s:number, i:number):
+    set {_amount} to number of {collection.%{_s}%.item::%{_i}%} in {_p}'s inventory
+    remove {_amount} of {collection.%{_s}%.item::%{_i}%} from {_p}'s inventory
+    add {_amount} to {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%}
+    if {_amount} is 0:
+        play sound "ENTITY_VILLAGER_NO" with volume 1 with pitch 1 to {_p}
+        send "&c&l해당 아이템 - [%{collection.%{_s}%.item::%{_i}%}%&c&l]을(를) 가지고 있지 않습니다." to {_p}
+    else:
+        play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 with pitch 1 to {_p}
+        send "%{collection.%{_s}%.item::%{_i}%}%(이)가 %{_amount}%개 만큼 수집되었습니다." to {_p}
+        if {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%} >= {collection.%{_s}%.max::%{_i}%}:
+            set {_over} to {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%} 
+            remove {collection.%{_s}%.max::%{_i}%} from {_over}
+            add {_over} of {collection.%{_s}%.item::%{_i}%} to {_p}'s inventory
+            if {_over} is not 0:
+                send "&f&l초과된 %{_over}%개의 아이템이 반환되었습니다." to {_p}
+            set {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%} to {collection.%{_s}%.max::%{_i}%}
+    
+    if {collection.%{_s}%.count.%uuid of {_p}%::%{_i}%} is {collection.%{_s}%.max::%{_i}%}:
+        broadcast "&f&l%{_p}%가 &f&l[&a&l%{collection.%{_s}%.item::%{_i}%}%&f&l] 수집을 완료했습니다!"
+        add 1 to {collection.main.count.%uuid of {_p}%::%{_s}%}
+        add 1 to {collection.main.sum.%uuid of {_p}%}
+    reloadItem({_p},{_inv},{_s},{_i})
+
+function makeCollection(p:player, s:number):
+    set {_inv} to chest inventory with 6 rows named "&8&l%{collection.main.name::%{_s}%}%"
+
+    set {_} to 0
+    loop 54 times:
+        set slot {_} of {_inv} to black stained glass pane named "&f"
+        add 1 to {_}
+
+    set {_} to 10
+    loop 4 times:
+        loop 7 times:
+            set slot {_} of {_inv} to air 
+            add 1 to {_}
+        add 2 to {_}
+
+    set slot 4 of {_inv} to {collection.main.item::%{_s}%} with all item flags named "&a&l%{collection.main.name::%{_s}%}%"
+    set slot 49 of {_inv} to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+
+    set {_} to 1
+    loop {collection.%{_s}%.item::*}:
+        if {collection.%{_s}%.count.%uuid of {_p}%::%{_}%} is {collection.%{_s}%.max::%{_}%}:
+            set slot {collection.slot::%{_}%} of {_inv} to green concrete with all item flags named "&a&l완료됨!" with lore "&e&l%{collection.%{_s}%.max::%{_}%}%&6&l/&e&l%{collection.%{_s}%.max::%{_}%}%"
+        else:
+            set slot {collection.slot::%{_}%} of {_inv} to {collection.%{_s}%.max::%{_}%} of {collection.%{_s}%.item::%{_}%} with all item flags with lore "&e&l%{collection.%{_s}%.count.%uuid of {_p}%::%{_}%}%&6&l/&e&l%{collection.%{_s}%.max::%{_}%}%" and "" and "&e&l클릭하여 수집"
+        add 1 to {_}
+
+    open {_inv} to {_p}
+
+command /collection:
+    trigger:
+        if {menu.isCommand.%uuid of player%} is 1:
+            set {_inv} to chest inventory with 6 rows named "&8&l수집품"
+
+            set {_} to 0
+            loop 54 times:
+                set slot {_} of {_inv} to black stained glass pane named "&f"
+                add 1 to {_}
+
+            set {_} to 10
+            loop 4 times:
+                loop 7 times:
+                    set slot {_} of {_inv} to air 
+                    add 1 to {_}
+                add 2 to {_}
+
+            set {_} to 1
+            loop {collection.main.item::*}:
+                if {collection.main.count.%uuid of player%::%{_}%} is {collection.main.max::%{_}%}:
+                    set slot {collection.slot::%{_}%} of {_inv} to green concrete with all item flags named "&a&l완료됨!" with lore "&e&l%{collection.main.max::%{_}%}%&6&l/&e&l%{collection.main.max::%{_}%}%"
+                else:
+                    set slot {collection.slot::%{_}%} of {_inv} to loop-value with all item flags named "&a&l%{collection.main.name::%{_}%}%" with all item flags with lore "&e&l%{collection.main.count.%uuid of player%::%{_}%}%&6&l/&e&l%{collection.main.max::%{_}%}%" and "" and "&e&l클릭하여 이동"
+                add 1 to {_}
+
+            set slot 4 of {_inv} to painting with all item flags named "&a&l수집품" with lore "&e&l%{collection.main.sum.%uuid of player%}%&6&l/&e&l%{collection.main.sum.max}%"
+            set slot 49 of {_inv} to barrier with all item flags named "&a&l뒤로가기" with lore "" and "&e&l클릭하여 이동"
+
+            open {_inv} to player
+
+on inventory click:
+    if inventory name is "&8&l수집품":
+        cancel event
+        set {_clicked} to clicked raw slot
+        set {_item} to clicked slot
+        set {_} to 1
+        loop 36 times:
+            if {collection.slot::%{_}%} is {_clicked}:
+                if {_item} is not air:
+                    play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                    makeCollection(player, {_})
+            add 1 to {_}
+        if {_clicked} is 49:
+            set {menu.isCommand.%uuid of player%} to 1
+            play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+            execute player command "/menu"
+            set {menu.isCommand.%uuid of player%} to 0
+
+on inventory click:
+    set {_name} to inventory name
+    loop {collection.main.name::*}:
+        set {_idx} to loop-index parsed as integer
+        if {_name} is "&8&l%loop-value%":
+            cancel event
+            set {_clicked} to clicked raw slot
+            set {_item} to clicked slot
+            loop {collection.slot::*}:
+                if loop-value-2 is {_clicked}:
+                    set {_idx2} to loop-index-2 parsed as integer
+                    if {_item} is green concrete:
+                        send "&a&l이미 수집을 완료한 아이템입니다." to player
+                    else:
+                        if {_item} is not air:
+                            collectItem(player, current inventory, {_idx}, {_idx2})
+            if {_clicked} is 49:
+                set {menu.isCommand.%uuid of player%} to 1
+                play sound "block.nether_wood_pressure_plate.click_on" with volume 1.4 and pitch 1 to player
+                execute player command "/collection"
+                set {menu.isCommand.%uuid of player%} to 0
+
+command /collection.start:
+    trigger:
+        if {collection.start.%uuid of player%} is not set:
+
+            set {level.combat.%uuid of player%} to 0
+            set {level.farming.%uuid of player%} to 0
+            set {level.mining.%uuid of player%} to 0
+            set {level.fishing.%uuid of player%} to 0
+            set {level.boss.%uuid of player%} to 0
+
+            set {level.combat.exp.%uuid of player%} to 0
+            set {level.farming.exp.%uuid of player%} to 0
+            set {level.mining.exp.%uuid of player%} to 0
+            set {level.fishing.exp.%uuid of player%} to 0
+            set {level.boss.exp.%uuid of player%} to 0
+
+            set {event.farming.points.%uuid of player%} to 0
+            set {event.fishing.points.%uuid of player%} to 0
+            set {event.mining.points.%uuid of player%} to 0
+
+            set {stat.farmingfo.max.%uuid of player%} to 0
+            set {stat.fishingfo.max.%uuid of player%} to 0
+            set {stat.miningfo.max.%uuid of player%} to 0
+            
+            set {collection.start.%uuid of player%} to 1
+            set {collection.main.sum.%uuid of player%} to 0 
+            set {collection.main.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.1.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.2.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.3.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.4.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.5.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.6.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.7.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.8.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.9.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.10.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.11.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.12.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.13.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.14.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.15.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.16.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.17.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.18.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.19.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.20.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.21.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.22.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.23.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.24.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.25.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.26.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.27.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {collection.28.count.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+            set {blobfish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {golden_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {karate_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {moldfin.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {skeleton_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {slugfish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {soul_fish.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {vanille.count.%uuid of player%::*} to 0 and 0, 0, 0
+            set {volcanic_stonefish.count.%uuid of player%::*} to 0 and 0, 0, 0
+
+            set {trophy.fish.sum.%uuid of player%::*} to 0 and 0, 0, 0
+            set {trophy.fish.1.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+            set {trophy.fish.2.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+            set {trophy.fish.3.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+            set {trophy.fish.4.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0
+
+            set {chest.combat.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {chest.farming.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {chest.mining.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {chest.fishing.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            set {chest.boss.%uuid of player%::*} to 0 and 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        else:
+            send "&c&l이미 사용한 명령입니다." to player
+
+command /restartcollection.confirm:
+    trigger:
+        delete {collection.start.%uuid of player%}
+
+command /restartcollection.all.confirm:
+    permission: op
+    trigger:
+        loop all offline players:
+            delete {collection.start.%uuid of loop-offline player%}
+
+command /variableset:
+    permission: op
+    trigger:
+        execute player command "/set.itemadder"
+        setMiningVariable()
+        setFarmingVariable()
+        setLevelVariable()
+        setFishingVariable()
+        setMaterialVariable()
+        setDicVariable()
+        set {collection.slot::*} to 10 and 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43
+        set {collection.main.name::*} to ("지상 수집품") and ("벌목 수집품"), ("특수 수집품"), ("동굴 수집품"), ("바다 수집품"), ("지옥 수집품"), ("엔드 수집품"), ("전리품 수집품"), ("전리품 수집품-2"), ("형판 수집품"), ("도자기 조각 수집품"), ("테라코타 수집품"), ("음식 수집품"), ("기능성 블럭 수집품"), ("식생 수집품"), ("작물 및 채집 수집품")
+        set {collection.main.item::*} to (grass block) and (oak log), (any music disc), (stone block), (water bucket), (netherrack), (end stone), (rotten flesh), (pork), (Sentry Armor Trim Smithing Template), (angler pottery sherd), (white glazed terracotta), (bread), (smithing table), (lily of the valley), (wheat)
+        set {collection.main.max::*} to 28 and 28, 28, 28, 28, 25, 12, 21, 17, 17, 20, 16, 20, 28, 25, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        set {collection.main.sum.max} to 0
+
+        loop {collection.main.max::*}:
+            add loop-value to {collection.main.sum.max}
+
+        set {collection.1.item::*} to (grass block) and (dirt), (coarse dirt), (rooted dirt), (podzol), (mycelium), (gravel), (clay block), (sand), (red sand), (snow block), (blue ice), (mud), (moss block), (azalea), (flowering azalea), (azalea leaves), (flowering azalea leaves), (big dripleaf), (small dripleaf), (lily pad), (cobweb), (hanging roots), (dead bush), (pink petals), (spore blossom), (vine), (glow lichen)
+        set {collection.1.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
+
+        set {collection.2.item::*} to (oak log) and (spruce log), (birch log), (jungle log), (acacia log), (dark oak log), (cherry log), (mangrove log), (oak leaves), (spruce leaves), (birch leaves), (jungle leaves), (acacia leaves), (dark oak leaves), (cherry leaves), (mangrove leaves), (mangrove roots), (oak sapling), (spruce sapling), (birch sapling), (jungle sapling), (acacia sapling), (dark oak sapling), (cherry sapling), (mangrove propagule), (mushroom stem), (brown mushroom block), (red mushroom block)
+        set {collection.2.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
+
+        set {collection.3.item::*} to (small amethyst bud) and (medium amethyst bud), (large amethyst bud), (amethyst cluster), (water bucket), (lava bucket), (powder snow bucket), (sculk), (sculk catalyst), (active shrieking shrieker), (sculk sensor), (axolotl bucket), (tadpole bucket), (any music disc), (bundle), (recovery compass), (clock), (spyglass), (bell), (lead), (name tag), (leather horse armor), (iron horse armor), (gold horse armor), (diamond horse armor), (saddle), (any minecart), (any boat) 
+        set {collection.3.max::*} to 1 and 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+        set {collection.4.item::*} to (stone) and (deepslate), (tuff), (diorite), (granite), (andesite), (coal ore), (obsidian), (mossy cobblestone), (amethyst block), (calcite), (pointed dripstone), (dripstone block), (deepslate coal ore), (copper ore), (iron ore), (gold ore), (redstone ore), (lapis lazuli ore), (diamond ore), (emerald ore), (deepslate copper ore), (deepslate iron ore), (deepslate gold ore), (deepslate redstone ore), (deepslate lapis lazuli ore), (deepslate diamond ore), (deepslate emerald ore)
+        set {collection.4.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1
+
+        set {collection.5.item::*} to (prismarine) and (sea lantern), (prismarine bricks), (dark prismarine), (dried kelp block), (sea pickle), (seagrass), (living horn coral block), (living fire coral block), (living brain coral block), (living bubble coral block), (living tube coral block), (nautilus shell), (heart of the sea), (living horn coral plant), (living fire coral plant), (living brain coral plant), (living bubble coral plant), (living tube coral plant), (bucket of pufferfish), (bucket of tropical fish), (living horn coral fan), (living fire coral fan), (living brain coral fan), (living bubble coral fan), (living tube coral fan), (bucket of salmon), (bucket of cod)
+        set {collection.5.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 10, 10, 10, 10, 10, 1, 1, 10, 10, 10, 10, 10, 1, 1
+
+        set {collection.6.item::*} to (netherrack), (nether quartz ore), (nether gold ore), (nether bricks), (basalt), (blackstone), (gilded blackstone), (crimson nylium), (nether wart block), (crimson stem), (crimson fungus), (soul sand), (soul soil), (magma block), (warped nylium), (warped wart block), (warped stem), (warped fungus), (ancient debris), (glowstone), (shroomlight), (blaze rod), (nether wart), (ghast tear), (wither rose)
+        set {collection.6.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1
+
+        set {collection.7.item::*} to (end stone) and (purpur block), (ender rod), (chorus plant), (chorus flower), (chorus fruits), (shulker shell), (dragon's breath), (ender eye), (ender chest), (dragon head item), (elytra)
+        set {collection.7.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1
+
+        set {collection.8.item::*} to (rotten flesh) and (string item), (spider eye), (bone), (gunpowder), (charcoal), (flint), (ink sac), (glow ink sac), (slime ball), (magma cream), (prismarine shard), (prismarine crystals), (trident), (totem of undying), (disc fragment), (ender pearl item), (phantom membrane), (arrow), (tipped arrow of slowness), (spectral arrow)
+        set {collection.8.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 10, 10, 10, 10, 10   
+
+        set {collection.9.item::*} to (beef) and (porkchop), (mutton), (chicken), (rabbit), (rabbit's foot), (rabbit hide), (feather), (leather), (bee nest), (honey block), (honeycomb), (honey bottle), (egg item), (turtle egg), (hatch 0 sniffer egg), (scute)
+        set {collection.9.max::*} to 10 and 10, 10, 10, 10, 1, 10, 10, 10, 10, 1, 10, 10, 10, 1, 1, 10
+
+        set {collection.10.item::*} to (netherite upgrade smithing template) and (Sentry Armor Trim Smithing Template), (Vex Armor Trim Smithing Template), (Wild Armor Trim Smithing Template), (Coast Armor Trim Smithing Template), (Dune Armor Trim Smithing Template), (Ward Armor Trim Smithing Template), (Silence Armor Trim Smithing Template), (Tide Armor Trim Smithing Template), (Snout Armor Trim Smithing Template), (Rib Armor Trim Smithing Template), (Wayfinder Armor Trim Smithing Template), (Raiser Armor Trim Smithing Template), (Shaper Armor Trim Smithing Template), (Host Armor Trim Smithing Template), (Eye Armor Trim Smithing Template), (Spire Armor Trim Smithing Template)
+        set {collection.10.max::*} to 1 and 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+        set {collection.11.item::*} to (angler pottery sherd) and (Archer Pottery Sherd), (Arms Up Pottery Sherd), (Blade Pottery Sherd), (Brewer Pottery Sherd), (Burn Pottery Sherd), (Danger Pottery Sherd), (Explorer Pottery Sherd), (Friend Pottery Sherd), (Heart Pottery Sherd), (Heartbreak Pottery Sherd), (Howl Pottery Sherd), (Miner Pottery Sherd), (Mourner Pottery Sherd), (Plenty Pottery Sherd), (Prize Pottery Sherd), (Sheaf Pottery Sherd), (Shelter Pottery Sherd), (Skull Pottery Sherd), (Snort Pottery Sherd)
+        set {collection.11.max::*} to 1 and 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+        set {collection.12.item::*} to (white glazed terracotta) and (light gray glazed terracotta), (gray glazed terracotta), (black glazed terracotta), (brown glazed terracotta), (red glazed terracotta), (orange glazed terracotta), (yellow glazed terracotta), (lime glazed terracotta), (green glazed terracotta), (cyan glazed terracotta), (light blue glazed terracotta), (blue glazed terracotta), (purple glazed terracotta), (magenta glazed terracotta), (pink glazed terracotta)
+        set {collection.12.max::*} to 2 and 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 and 2
+
+        set {collection.13.item::*} to (bread) and (baked potato), (golden carrot), (golden apple), (notch apple), (cooked cod), (cooked salmon), (steak), (cooked porkchop), (cooked chicken), (cooked mutton), (cooked rabbit), (mushroom stew), (beetroot soup), (suspicious stews), (rabbit stew), (cookie), (pumpkin pie), (cake), (dried kelp)
+        set {collection.13.max::*} to 10 and 10, 10, 10, 2, 10, 10, 10, 10, 10, 10, 10, 2, 2, 2, 2, 10, 10, 2, 10, 10, 4, 10
+
+        set {collection.14.item::*} to (crafting table) and (furnace), (blast furnace), (brewing stand), (anvil), (smoker), (bell), (composter), (empty cauldron), (loom), (lectern), (campfire), (soul campfire), (enchanting table), (stonecutter), (cartography table), (fletching table), (smithing table), (grindstone), (note block), (jukebox without record), (chest), (barrel), (ender chest), (shulker box), (respawn anchor), (beacon), (conduit)
+        set {collection.14.max::*} to 1 and 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+        set {collection.15.item::*} to (large fern) and (short grass), (tall grass), (fern), (rose bush), (sunflower), (peony), (lilac), (white tulip), (dandelion), (poppy), (allium), (azure bluet), (red tulip), (pink tulip), (orange tulip), (blue orchid), (lily of the valley), (cornflower), (oxeye daisy), (cactus), (bamboo), (sugar cane), (torch flower), (pitcher plant)
+        set {collection.15.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1
+
+        set {collection.16.item::*} to (apple) and (potato), (poisonous potato), (wheat), (beetroot), (glow berries), (carrot), (melon slice), (sweet berries), (pumpkin), (nether wart), (wheat seeds), (pumpkin seeds), (melon seeds), (beetroot seeds), (cocoa beans)
+        set {collection.16.max::*} to 10 and 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
+
+
+
+command /testCollection [<number>]:
+    permission: op
+    trigger:
+        loop {collection.%arg-1%.item::*}:
+            add {collection.%arg-1%.max::%loop-index%} of loop-value to player's inventory
